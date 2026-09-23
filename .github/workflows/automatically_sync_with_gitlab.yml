@@ -21,7 +21,6 @@ jobs:
       issues: write
 
     steps:
-    steps:
       - name: Checkout Repository
         uses: actions/checkout@v7.0.1
 
