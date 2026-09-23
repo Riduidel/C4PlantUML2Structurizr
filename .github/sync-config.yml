@@ -1,0 +1,13 @@
+#sync-config.yml
+# When you have gitlab.sync.[entity].enabled: true, it means those entities will be synced FROM GitLab To GitHub
+gitlab:
+  enabled: true
+  owner: "Riduidel"
+  repo: "C4PlantUML2Structurizr"
+  host: "framagit.org"
+
+# When you have github.sync.[entity].enabled: true, it means those entities will be synced FROM GitHub To GitLab
+github:
+  enabled: true
+  owner: "Riduidel"
+  repo: "C4PlantUML2Structurizr"
