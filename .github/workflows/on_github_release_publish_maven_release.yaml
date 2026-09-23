@@ -1,0 +1,33 @@
+name: On GitHub release created
+
+on:
+  release:
+    types:
+      - created
+  
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - id: release_number
+        name: Get release version number to have it injected into maven
+        uses: cardinalby/git-get-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          latest: true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: adopt
+          java-version: 21
+          cache: 'maven'
+      - name: Publish package
+        run: |
+          mvn --batch-mode deploy

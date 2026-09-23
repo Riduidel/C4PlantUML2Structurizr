@@ -1,0 +1,42 @@
+name: On pull request merged in main create a release
+
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    # Courtesy of https://stackoverflow.com/a/74955554/15619
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required for github-action-get-previous-tag
+
+      - name: Get next version
+        uses: reecetech/version-increment@2024.4.3
+        id: version
+        with:
+          scheme: semver
+          increment: patch
+
+      - run: echo "previous version is $PREVIOUS next version is $NEXT"
+        env:
+          PREVIOUS: "${{steps.version.outputs.current-version}}"
+          NEXT: "${{steps.version.outputs.version}}"
+
+      - name: Create release
+        id: create_release_id
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ steps.version.outputs.version }}

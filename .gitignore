@@ -3,9 +3,18 @@
 *
 
 # Allow yml files in the .github folder
-!.github/**/*.yml
+!*.yml
+!*.yaml
 # Allow markdown anywhere
 !*.md
 
 # And don't forget to allow the gitignore!
 !.gitignore
+
+# Of course we're java developers, so add a few things
+!pom.xml
+!*.java
+# Of course I extend my maven build with Groovy!
+!*.groovy
+# Apply rules also in subdirectories
+!*/
