@@ -6,12 +6,23 @@
     <artifactId>C4PlantUML2Structurizr</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <modules>
+        <module>structurizr-dsl-writer</module>
+        <module>structurizr-copier</module>
+        <module>C4PlantUML-parser</module>
+    </modules>
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jacoco.version>0.8.12</jacoco.version>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.structurizr</groupId>
+                <artifactId>structurizr-core</artifactId>
+                <version>6.2.1</version>
+            </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
@@ -21,6 +32,7 @@
         </dependencies>
     </dependencyManagement>
     <build>
+        <defaultGoal>verify</defaultGoal>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -46,12 +58,9 @@
         </developer>
     </developers>
     <scm>
-        <!-- We use https connections for using C4PlantUML2Structurizr.github.token as
-		password -->
         <connection>scm:git:https://git@github.com/Riduidel/C4PlantUML2Structurizr.git</connection>
         <developerConnection>scm:git:https://git@github.com/Riduidel/C4PlantUML2Structurizr.git</developerConnection>
         <url>https://github.com/Riduidel/C4PlantUML2Structurizr.git</url>
-        <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
@@ -84,7 +93,6 @@
                                 <exclude>**/ingester/model/*</exclude>
                                 <exclude>**/github/model/*</exclude>
                                 <exclude>**/stackoverflow/model/*</exclude>
-                                <!-- Standard set of exclusions-->
                                 <exclude>**/annotations/*</exclude>
                                 <exclude>**/enums/*</exclude>
                                 <exclude>**/exceptions/*</exclude>
@@ -137,13 +145,9 @@
             </build>
         </profile>
         <profile>
-            <!-- This profile will read the jacoco report file to change
-		the value of the jacoco treshold (the best way to have code quality raising).
-		It is intended to be run in Jenkins on master branch -->
             <id>update-target-coverage</id>
             <activation>
                 <file>
-                    <!-- Yup, it's an always-active profile -->
                     <exists>target/site/jacoco/index.html</exists>
                 </file>
             </activation>
@@ -165,7 +169,6 @@
                                 <goals>
                                     <goal>execute</goal>
                                 </goals>
-                                <!-- We have to put this one in verify to make sure all tests are done-->
                                 <phase>verify</phase>
                                 <configuration>
                                     <source>src/build/groovy/updateJacocoTarget.groovy</source>
@@ -180,7 +183,6 @@
             <id>Make my code spotless!</id>
             <activation>
                 <file>
-                    <!-- Yup, it's an always-active profile -->
                     <exists>pom.xml</exists>
                 </file>
             </activation>
@@ -190,12 +192,10 @@
                         <groupId>com.diffplug.spotless</groupId>
                         <artifactId>spotless-maven-plugin</artifactId>
                         <version>3.10.2</version>
-                        <!-- Beware! order of elements declaration IS important -->
                         <configuration>
                             <pom>
                                 <sortPom>
                                     <encoding>UTF-8</encoding>
-                                    <!-- The encoding of the pom files -->
                                     <indentAttribute>schemaLocation</indentAttribute>
                                     <predefinedSortOrder>custom_1</predefinedSortOrder>
                                     <sortDependencies>scope,groupId,artifactId</sortDependencies>
@@ -206,7 +206,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id><![CDATA[Perform all formatting operations at once]]></id>
+                                <id>Perform all formatting operations at once</id>
                                 <goals>
                                     <goal>apply</goal>
                                 </goals>
