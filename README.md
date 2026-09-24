@@ -43,6 +43,9 @@ TODO create usage command
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/Riduidel/C4PlantUML2Structurizr/issues). You can also take a look at the [contributing guide](TODO add contributing guide).
 
+This project is LLM-free, and wants to stay this way.
+That's why the [AGENTS.md](AGENTS.md) file contains denying instructions.
+
 ## Show your support
 
 Give a ⭐️ if this project helped you!
