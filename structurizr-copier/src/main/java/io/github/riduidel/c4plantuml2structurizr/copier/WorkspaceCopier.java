@@ -37,19 +37,9 @@ public class WorkspaceCopier {
 		this.hack = hack;
 	}
 
-	void clone(Workspace from, Workspace to) {
-		String included = to.getProperties().getOrDefault(C4PlantUML2Structurizr.Constants.INCLUDED_WORKSPACES, "");
-		List<String> includedWorkspaces = new ArrayList<>(Arrays.asList(included.split(",")));
-		if(from.getName().isBlank())
-			throw new UnsupportedOperationException("No workspace should have a blank name");
-		if(!includedWorkspaces.contains(from.getName())) {
-			logger.fine(String.format("Cloning %s to %s", from, to));
+	public void clone(Workspace from, Workspace to) {
 			clone(from.getModel(), to.getModel());
 			clone(from.getViews(), to.getViews());
-			includedWorkspaces.add(from.getName());
-			to.removeProperty(C4PlantUML2Structurizr.Constants.INCLUDED_WORKSPACES);
-			to.addProperty(C4PlantUML2Structurizr.Constants.INCLUDED_WORKSPACES, includedWorkspaces.stream().collect(Collectors.joining(",")));
-		}
 	}
 
 	void clone(ViewSet from, ViewSet to) {
