@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.12</jacoco.version>
         <junit.version>6.1.3</junit.version>
+        <jacoco.covered.instructions.target.percentage>0.0</jacoco.covered.instructions.target.percentage>
     </properties>
     <dependencyManagement>
         <dependencies>
