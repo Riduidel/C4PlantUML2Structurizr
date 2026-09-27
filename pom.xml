@@ -7,6 +7,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
+        <module>structurizr-visitor</module>
         <module>structurizr-dsl-writer</module>
         <module>structurizr-copier</module>
         <module>C4PlantUML-parser</module>
@@ -15,18 +16,48 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.12</jacoco.version>
+        <junit.version>6.1.3</junit.version>
     </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.github.fge</groupId>
+                <artifactId>throwing-lambdas</artifactId>
+                <version>0.5.0</version>
+            </dependency>
+            <dependency>
                 <groupId>com.structurizr</groupId>
                 <artifactId>structurizr-core</artifactId>
-                <version>6.2.1</version>
+                <version>6.2.3</version>
+            </dependency>
+            <!-- Source: https://mvnrepository.com/artifact/com.structurizr/structurizr-dsl -->
+            <dependency>
+                <groupId>com.structurizr</groupId>
+                <artifactId>structurizr-dsl</artifactId>
+                <version>6.2.3</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>3.27.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
