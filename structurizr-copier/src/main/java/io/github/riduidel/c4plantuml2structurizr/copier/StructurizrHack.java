@@ -8,7 +8,6 @@ import com.structurizr.model.Model;
 import com.structurizr.model.Relationship;
 
 public class StructurizrHack {
-	private static InteractionStyleFinder interactionStyleFinder = new InteractionStyleFinder();
 	static Method addRelationshipMethod;
 	static {
 		try {
@@ -28,9 +27,5 @@ public class StructurizrHack {
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to mess with Structurizr", e);
 		}
-	}
-
-	public static InteractionStyle getInteractionFromTechnology(String technology) {
-		return interactionStyleFinder.getInteractionStyleFor(technology);
 	}
 }

@@ -304,4 +304,14 @@ public class FullVisitorAdapter implements Visitor {
 
 	}
 
+	@Override
+	public boolean startVisitModel(Model model) {
+		return true;
+	}
+
+	@Override
+	public void endVisitModel(Model model) {
+		
+	}
+
 }

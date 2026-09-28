@@ -18,7 +18,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.fge.lambdas.Throwing;
 import com.structurizr.Workspace;
-import com.structurizr.dsl.StructurizrDslParser;
+
+import io.github.riduidel.structurizr.StructurizrTestUtils;
 
 /**
  * We check that the system works correctly by ensuring all elements of input workspace are visited
@@ -55,16 +56,13 @@ class WorkspaceVisitorTest {
             return stream
             		.filter(path -> matcher.matches(path))
             		.map(Throwing.function(path -> {
-            			StructurizrDslParser parser = new StructurizrDslParser();
-            			parser.parse(path.toFile());
-            			Workspace parsed = parser.getWorkspace();
-            			return Arguments.of(path.toFile(), parsed);
+            			return Arguments.of(path.toFile(), StructurizrTestUtils.toWorkspace(path));
             		}))
             		.toList()
             		.stream();  
         }
 	}
-	
+
 	@ParameterizedTest
 	@MethodSource
 	void all_elements_of_workspace_are_visited(File source, Workspace workspace) {
