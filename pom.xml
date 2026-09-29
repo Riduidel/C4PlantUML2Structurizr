@@ -70,6 +70,26 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.9.0</version>
             </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <reportFormat>plain</reportFormat>
+                    <consoleOutputReporter>
+                        <disable>true</disable>
+                    </consoleOutputReporter>
+                    <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+                        <theme>EMOJI</theme>
+                    </statelessTestsetInfoReporter>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>me.fabriciorby</groupId>
+                        <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                        <version>1.5.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
     <url>https://riduidel.github.io/C4PlantUML2Structurizr/</url>
