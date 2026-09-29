@@ -8,6 +8,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>structurizr-copier</artifactId>
+    <properties>
+        <jacoco.covered.instructions.target.percentage>0.38</jacoco.covered.instructions.target.percentage>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

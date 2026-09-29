@@ -8,6 +8,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>structurizr-visitor</artifactId>
+    <properties>
+        <jacoco.covered.instructions.target.percentage>0.58</jacoco.covered.instructions.target.percentage>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.structurizr</groupId>
