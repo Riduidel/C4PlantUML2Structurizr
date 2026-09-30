@@ -243,6 +243,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	
 	@Override
 	public void endVisitComponent(Component component) {
+		endVisitModelElement(component);
 		super.endVisitComponent(component);
 	}
 	
