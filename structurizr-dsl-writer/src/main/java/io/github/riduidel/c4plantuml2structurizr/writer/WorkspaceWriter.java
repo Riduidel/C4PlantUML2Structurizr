@@ -1,14 +1,18 @@
 package io.github.riduidel.c4plantuml2structurizr.writer;
 
 import java.beans.Introspector;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.structurizr.PropertyHolder;
@@ -17,13 +21,14 @@ import com.structurizr.model.Component;
 import com.structurizr.model.Container;
 import com.structurizr.model.Element;
 import com.structurizr.model.Model;
+import com.structurizr.model.ModelItem;
 import com.structurizr.model.Person;
+import com.structurizr.model.Relationship;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.ViewSet;
 
 import io.github.riduidel.structurizr.visitor.FullVisitorAdapter;
 import io.github.riduidel.structurizr.visitor.GroupAwareVisitor;
-import io.github.riduidel.structurizr.visitor.WorkspaceVisitor;
 import io.github.riduidel.structurizr.visitor.group.GroupAwareWorkspaceVisitor;
 
 public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVisitor {
@@ -81,14 +86,18 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		super.endVisit(workspace);
 	}
 	private void endVisitElement(boolean force, StringBuilder declarationLine, StringBuilder...localTags) {
-		endVisitElement(force, declarationLine, Arrays.asList(localTags));
+		endVisitElement(force, declarationLine, Arrays.asList(localTags), Arrays.asList());
 	}
 
-	private void endVisitElement(boolean force, StringBuilder declarationLine, List<StringBuilder> localTags) {
+	private void endVisitElement(boolean force, 
+			StringBuilder declarationLine, 
+			List<StringBuilder> prefixLines,
+			List<StringBuilder> suffixLines) {
 		dedent();
 		List<StringBuilder> content = new ArrayList<>();
-		content.addAll(localTags);
+		content.addAll(prefixLines);
 		content.addAll(fragments.pop());
+		content.addAll(suffixLines);
 		content = content.stream()
 				.filter(builder -> !builder.isEmpty())
 				.collect(Collectors.toList());
@@ -116,18 +125,31 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	
 	@Override
 	public void endVisitModel(Model model) {
+		for(Relationship r : model.getRelationships()) {
+			writeRelationship(r);
+		}
 		endVisitElement(
 				true,
-				new StringBuilder().append("model"), writeProperties(model)
+				new StringBuilder("model"), 
+				writeProperties(model)
 				);
 		super.endVisitModel(model);
 	}
 
-	private StringBuilder writeUrl(Element element) {
+	private StringBuilder writeUrl(ModelItem element) {
 		StringBuilder returned = new StringBuilder();
 		if(element.getUrl()!=null && !element.getUrl().isBlank()) {
 			returned.append(prefix)
 				.append("url \"").append(element.getUrl()).append("\"\n");
+		}
+		return returned;
+	}
+	private StringBuilder writePerspectives(ModelItem element) {
+		StringBuilder returned = new StringBuilder();
+		if(element.getPerspectives()!=null) {
+			if(!element.getPerspectives().isEmpty()) {
+				throw new UnsupportedOperationException("Not yet implemented");
+			}
 		}
 		return returned;
 	}
@@ -156,7 +178,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		return returned;
 	}
 
-	private StringBuilder writeTags(Element element) {
+	private StringBuilder writeTags(ModelItem element) {
 		StringBuilder returned = new StringBuilder();
 		// Structurizr adds to normal tags the element class name (and the "element" tag)
 		Set<String> tagsSet = new LinkedHashSet<>(element.getTagsAsSet());
@@ -255,5 +277,33 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 				new StringBuilder("group")
 					.append(" \"").append(nextPath.getLast()) .append("\"")
 				);
+	}
+
+	private void writeRelationship(Relationship relationship) {
+		startVisitElement();
+		StringBuilder declarationLine = new StringBuilder();
+		declarationLine.append(getVariableName(relationship.getSource()).get());
+		declarationLine.append(" -> ");
+		declarationLine.append(getVariableName(relationship.getDestination()).get());
+		List<String> elements = Arrays.asList(relationship.getDescription(), relationship.getTechnology());
+		Collections.reverse(elements);
+		elements = elements
+			.stream()
+			.dropWhile(s -> s==null || s.isBlank())
+			.map(s -> "\""+s+"\"")
+			.toList();
+		Collections.reverse(elements);
+		if(!elements.isEmpty()) {
+			declarationLine.append(" ");
+		}
+		declarationLine.append(elements.stream()
+			.collect(Collectors.joining(" ")));
+		
+		endVisitElement(false, 
+				declarationLine,
+				writeTags(relationship),
+				writeUrl(relationship),
+				writeProperties(relationship),
+				writePerspectives(relationship));
 	}
 }
