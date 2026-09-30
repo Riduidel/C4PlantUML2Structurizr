@@ -6,27 +6,33 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.structurizr.PropertyHolder;
 import com.structurizr.Workspace;
+import com.structurizr.model.Component;
+import com.structurizr.model.Container;
 import com.structurizr.model.Element;
 import com.structurizr.model.Model;
 import com.structurizr.model.Person;
+import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.ViewSet;
 
 import io.github.riduidel.structurizr.visitor.FullVisitorAdapter;
+import io.github.riduidel.structurizr.visitor.GroupAwareVisitor;
 import io.github.riduidel.structurizr.visitor.WorkspaceVisitor;
+import io.github.riduidel.structurizr.visitor.group.GroupAwareWorkspaceVisitor;
 
-public class WorkspaceWriter extends FullVisitorAdapter {
+public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVisitor {
 	String prefix = "";
 	Stack<List<StringBuilder>> fragments = new Stack<>();
 	private String fullString;
 
 	public String write(Workspace workspace) {
-		WorkspaceVisitor visitor = new WorkspaceVisitor(this);
+		GroupAwareWorkspaceVisitor visitor = new GroupAwareWorkspaceVisitor(this);
 		visitor.visit(workspace);
 		return fullString;
 	}
@@ -134,14 +140,16 @@ public class WorkspaceWriter extends FullVisitorAdapter {
 		}
 		return returned;
 	}
+	
+	private Optional<String> getVariableName(Element element) {
+		return Optional.ofNullable(element.getProperties().get("structurizr.dsl.identifier"));
+	}
 
 	private StringBuilder writeDeclaration(Element element) {
 		StringBuilder returned = new StringBuilder();
-		if(element.getProperties().containsKey("structurizr.dsl.identifier")) {
-			returned
-				.append(element.getProperties().get("structurizr.dsl.identifier"))
-				.append(" = ");
-		}
+		returned.append(getVariableName(element)
+			.map(name -> name + " = ")
+			.orElse(""));
 		returned
 			.append(Introspector.decapitalize(element.getClass().getSimpleName()))
 			.append(" \"").append(element.getName()).append("\"");
@@ -160,6 +168,15 @@ public class WorkspaceWriter extends FullVisitorAdapter {
 		}
 		return returned;
 	}
+	
+	private void endVisitModelElement(Element person) {
+		endVisitElement(false,
+				writeDeclaration(person),
+				writeProperties(person),
+				writeDescription(person),
+				writeUrl(person), 
+				writeTags(person));
+	}
 
 	@Override
 	public boolean startVisitPerson(Person person) {
@@ -168,12 +185,43 @@ public class WorkspaceWriter extends FullVisitorAdapter {
 	}
 	@Override
 	public void endVisitPerson(Person person) {
-		endVisitElement(false,
-				writeDeclaration(person),
-				writeProperties(person),
-				writeDescription(person),
-				writeUrl(person), writeTags(person));
+		endVisitModelElement(person);
 		super.endVisitPerson(person);
+	}
+	
+	@Override
+	public boolean startVisitSoftwareSystem(SoftwareSystem system) {
+		startVisitElement();
+		return super.startVisitSoftwareSystem(system);
+	}
+	
+	@Override
+	public void endVisitSoftwareSystem(SoftwareSystem system) {
+		endVisitModelElement(system);
+		super.endVisitSoftwareSystem(system);
+	}
+	
+	@Override
+	public boolean startVisitContainer(Container container) {
+		startVisitElement();
+		return super.startVisitContainer(container);
+	}
+	
+	@Override
+	public void endVisitContainer(Container container) {
+		endVisitModelElement(container);
+		super.endVisitContainer(container);
+	}
+	
+	@Override
+	public boolean startVisitComponent(Component component) {
+		startVisitElement();
+		return super.startVisitComponent(component);
+	}
+	
+	@Override
+	public void endVisitComponent(Component component) {
+		super.endVisitComponent(component);
 	}
 	
 	@Override
@@ -193,5 +241,19 @@ public class WorkspaceWriter extends FullVisitorAdapter {
 	}
 	void dedent() {
 		prefix = prefix.substring(0, prefix.length()-1);
+	}
+
+	@Override
+	public boolean startVisitGroup(List<String> nextPath) {
+		startVisitElement();
+		return true;
+	}
+
+	@Override
+	public void endVisitGroup(List<String> nextPath) {
+		endVisitElement(false,
+				new StringBuilder("group")
+					.append(" \"").append(nextPath.getLast()) .append("\"")
+				);
 	}
 }

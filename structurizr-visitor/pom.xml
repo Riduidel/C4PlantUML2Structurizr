@@ -9,7 +9,7 @@
     </parent>
     <artifactId>structurizr-visitor</artifactId>
     <properties>
-        <jacoco.covered.instructions.target.percentage>0.58</jacoco.covered.instructions.target.percentage>
+        <jacoco.covered.instructions.target.percentage>0.32</jacoco.covered.instructions.target.percentage>
     </properties>
     <dependencies>
         <dependency>

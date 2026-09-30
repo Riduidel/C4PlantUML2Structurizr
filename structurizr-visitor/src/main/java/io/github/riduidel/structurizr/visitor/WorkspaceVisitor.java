@@ -19,8 +19,11 @@ import com.structurizr.view.SystemContextView;
 import com.structurizr.view.SystemLandscapeView;
 import com.structurizr.view.ViewSet;
 
+/**
+ * Basic workspace visitor, allowing to navigate the model (without handling groups)
+ */
 public class WorkspaceVisitor {
-	private Visitor visitor;
+	protected Visitor visitor;
 
 	public WorkspaceVisitor(Visitor visitor) {
 		this.visitor = visitor;
@@ -36,31 +39,39 @@ public class WorkspaceVisitor {
 
 	protected void visitModel(Model model) {
 		if(visitor.startVisitModel(model)) {
-			if(visitor.startVisitPeople(model)) {
-				for(Person person : model.getPeople()) {
-					visitPerson(person);
-				}
-				visitor.endVisitPeople(model);
-			}
-			if(visitor.startVisitSoftwareSystemList(model)) {
-				for(SoftwareSystem system : model.getSoftwareSystems()) {
-					visitSoftwareSystem(system);
-				}
-				visitor.endVisitSoftwareSystemList(model);
-			}
-			if(visitor.startVisitDeploymentList(model)) {
-				for(DeploymentNode node : model.getDeploymentNodes()) {
-					visitDeploymentNode(node);
-				}
-				visitor.endVisitDeploymentList(model);
-			}
-			if(visitor.startVisitCustomElementList(model)) {
-				for(CustomElement custom : model.getCustomElements()) {
-					visitCustomElement(custom);
-				}
-				visitor.endVisitCustomElementList(model);
-			}
+			doVisitModel(model);
 			visitor.endVisitModel(model);
+		}
+	}
+
+	/**
+	 * Visit the model irespectively of groups they're declared in
+	 * @param model
+	 */
+	protected void doVisitModel(Model model) {
+		if(visitor.startVisitPeople(model)) {
+			for(Person person : model.getPeople()) {
+				visitPerson(person);
+			}
+			visitor.endVisitPeople(model);
+		}
+		if(visitor.startVisitSoftwareSystemList(model)) {
+			for(SoftwareSystem system : model.getSoftwareSystems()) {
+				visitSoftwareSystem(system);
+			}
+			visitor.endVisitSoftwareSystemList(model);
+		}
+		if(visitor.startVisitDeploymentList(model)) {
+			for(DeploymentNode node : model.getDeploymentNodes()) {
+				visitDeploymentNode(node);
+			}
+			visitor.endVisitDeploymentList(model);
+		}
+		if(visitor.startVisitCustomElementList(model)) {
+			for(CustomElement custom : model.getCustomElements()) {
+				visitCustomElement(custom);
+			}
+			visitor.endVisitCustomElementList(model);
 		}
 	}
 	
@@ -131,23 +142,27 @@ public class WorkspaceVisitor {
 
 	protected void visitStyles(Styles styles) {
 		if(visitor.startVisitStylesList(styles)) {
-			if(visitor.startVisitElementStyleList(styles)) {
-				for(ElementStyle e : styles.getElements()) {
-					if(visitor.startVisitElementStyle(e)) {
-						visitor.endVisitElementStyle(e);
-					}
-				}
-				visitor.endVisitElementStyleList(styles);
-			}
-			if(visitor.startVisitRelationshipStyleList(styles)) {
-				for(RelationshipStyle e : styles.getRelationships()) {
-					if(visitor.startVisitRelationshipStyle(e)) {
-						visitor.endVisitRelationshipStyle(e);
-					}
-				}
-				visitor.endVisitRelationshipStyleList(styles);
-			}
+			doVisitStyles(styles);
 			visitor.endVisitStylesList(styles);
+		}
+	}
+
+	protected void doVisitStyles(Styles styles) {
+		if(visitor.startVisitElementStyleList(styles)) {
+			for(ElementStyle e : styles.getElements()) {
+				if(visitor.startVisitElementStyle(e)) {
+					visitor.endVisitElementStyle(e);
+				}
+			}
+			visitor.endVisitElementStyleList(styles);
+		}
+		if(visitor.startVisitRelationshipStyleList(styles)) {
+			for(RelationshipStyle e : styles.getRelationships()) {
+				if(visitor.startVisitRelationshipStyle(e)) {
+					visitor.endVisitRelationshipStyle(e);
+				}
+			}
+			visitor.endVisitRelationshipStyleList(styles);
 		}
 	}
 
