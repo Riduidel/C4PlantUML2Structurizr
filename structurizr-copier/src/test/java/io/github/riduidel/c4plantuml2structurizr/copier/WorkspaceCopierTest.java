@@ -59,7 +59,6 @@ class WorkspaceCopierTest {
 	}
 
 	static Stream<Arguments> can_copy_workspace_into_another() throws URISyntaxException, IOException {
-		PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**/*.dsl");
 		// Now read the whole folder of examples
 		URL resource = WorkspaceCopierTest.class.getClassLoader()
 				.getResource(WorkspaceCopierTest.class.getPackageName().replace('.', '/'));
