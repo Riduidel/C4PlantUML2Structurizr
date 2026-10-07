@@ -8,6 +8,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>structurizr-dsl-writer</artifactId>
+    <properties>
+        <jacoco.covered.instructions.target.percentage>0.96</jacoco.covered.instructions.target.percentage>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -17,10 +20,6 @@
         <dependency>
             <groupId>com.structurizr</groupId>
             <artifactId>structurizr-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -42,6 +41,11 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
