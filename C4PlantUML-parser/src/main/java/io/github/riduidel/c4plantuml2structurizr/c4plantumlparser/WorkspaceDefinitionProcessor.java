@@ -9,7 +9,7 @@ import com.structurizr.Workspace;
 import net.sourceforge.plantuml.BlockUml;
 import net.sourceforge.plantuml.SourceFileReader;
 
-public class Parser {
+public class WorkspaceDefinitionProcessor {
 	private DiagramTypeDetector detector = new DiagramTypeDetector();
 
 	/**
@@ -43,11 +43,5 @@ public class Parser {
 	}
 
 	private Workspace parseContext(File context) throws IOException {
-		SourceFileReader reader = new SourceFileReader(true, context);
-		for(BlockUml block : reader.getBlocks()) {
-			System.out.println(block);
-		}
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

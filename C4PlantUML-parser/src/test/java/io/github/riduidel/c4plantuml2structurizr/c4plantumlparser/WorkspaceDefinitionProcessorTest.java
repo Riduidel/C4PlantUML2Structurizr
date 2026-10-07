@@ -27,8 +27,8 @@ import com.structurizr.dsl.StructurizrDslParserException;
 import io.github.riduidel.structurizr.StreamUtils;
 import io.github.riduidel.structurizr.StructurizrTestUtils;
 
-class ParserTest extends Parser {
-	private static final Logger logger = Logger.getLogger(ParserTest.class.getName());
+class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
+	private static final Logger logger = Logger.getLogger(WorkspaceDefinitionProcessorTest.class.getName());
 	static PathMatcher plantuml = FileSystems.getDefault().getPathMatcher("glob:**/*.{plantuml,puml}");
 	static PathMatcher structurizr = FileSystems.getDefault().getPathMatcher("glob:**/*.dsl");
 	
@@ -77,8 +77,8 @@ class ParserTest extends Parser {
 
 	static Stream<Arguments> can_parse_set_of_C4PlantUML_files() throws URISyntaxException, IOException {
 		// Now read the whole folder of examples
-		URL resource = ParserTest.class.getClassLoader()
-				.getResource(ParserTest.class.getPackageName().replace('.', '/'));
+		URL resource = WorkspaceDefinitionProcessorTest.class.getClassLoader()
+				.getResource(WorkspaceDefinitionProcessorTest.class.getPackageName().replace('.', '/'));
 		Path dirPath = Paths.get(resource.toURI());
 		// In that folder, each subfolder is a test case containing exactly three
 		// workspace files
@@ -86,10 +86,10 @@ class ParserTest extends Parser {
 			List<Arguments> returned = stream
 					.filter(path -> path.toFile().isDirectory())
 					.filter(StreamUtils.andLogFilteredOutValues(
-							Throwing.predicate(ParserTest::pathHasRequiredFiles), 
-							Throwing.consumer(ParserTest::explainWhyPathIsBad)))
+							Throwing.predicate(WorkspaceDefinitionProcessorTest::pathHasRequiredFiles), 
+							Throwing.consumer(WorkspaceDefinitionProcessorTest::explainWhyPathIsBad)))
 					.map(Path::toFile)
-					.map(Throwing.function(ParserTest::toArguments))
+					.map(Throwing.function(WorkspaceDefinitionProcessorTest::toArguments))
 					.toList()
 					;
 			return returned.stream();
@@ -103,7 +103,7 @@ class ParserTest extends Parser {
 		// Given
 		Workspace expected = StructurizrTestUtils.toWorkspace(workspace);
 		// When
-		Workspace parsed = new Parser().parse(diagrams);
+		Workspace parsed = new WorkspaceDefinitionProcessor().parse(diagrams);
 		// Then
 		Assertions.assertThat(parsed).usingRecursiveComparison()
 		// I think I can do better than that
