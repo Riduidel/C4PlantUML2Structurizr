@@ -1,0 +1,8 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(personAlias, "A person", "Optional Description")
+System(systemAlias, "A system", "Optional Description")
+
+Rel(personAlias, systemAlias, "A relationship", "Optional Technology")
+@enduml
