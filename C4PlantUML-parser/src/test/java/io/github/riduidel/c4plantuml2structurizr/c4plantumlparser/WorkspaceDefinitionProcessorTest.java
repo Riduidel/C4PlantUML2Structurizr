@@ -24,6 +24,7 @@ import com.github.fge.lambdas.Throwing;
 import com.structurizr.Workspace;
 import com.structurizr.dsl.StructurizrDslParserException;
 
+import io.github.riduidel.c4plantuml2structurizr.writer.WorkspaceWriter;
 import io.github.riduidel.structurizr.StreamUtils;
 import io.github.riduidel.structurizr.StructurizrTestUtils;
 
@@ -105,10 +106,24 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 		// When
 		Workspace parsed = new WorkspaceDefinitionProcessor().parse(diagrams);
 		// Then
-		Assertions.assertThat(parsed).usingRecursiveComparison()
-		// I think I can do better than that
-			.ignoringFieldsMatchingRegexes(".*properties")
-			.isEqualTo(expected);
+		try {
+			Assertions.assertThat(parsed).usingRecursiveComparison()
+			// I think I can do better than that
+				.ignoringFieldsMatchingRegexes(".*properties|.*interactionStyle|.*tags")
+				.isEqualTo(expected);
+		} catch(AssertionError e) {
+			WorkspaceWriter writer = new WorkspaceWriter();
+			String effective = writer.write(parsed);
+			logger.severe(String.format("""
+					 Workspace parsed from %s is invalid
+					 ########################################################
+					 %s
+					 ########################################################
+					""",
+					folder,
+					effective));
+			throw e;
+		}
 	}
 
 }

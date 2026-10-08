@@ -292,7 +292,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 			.stream()
 			.dropWhile(s -> s==null || s.isBlank())
 			.map(s -> "\""+s+"\"")
-			.toList();
+			.collect(Collectors.toCollection(() -> new ArrayList<>()));
 		Collections.reverse(elements);
 		if(!elements.isEmpty()) {
 			declarationLine.append(" ");
