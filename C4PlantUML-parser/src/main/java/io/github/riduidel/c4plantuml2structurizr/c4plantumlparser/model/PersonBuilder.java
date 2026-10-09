@@ -6,8 +6,13 @@ import com.structurizr.model.Person;
 public class PersonBuilder extends ModelElementBuilder<PersonBuilder, Person> {
 
 	@Override
-	protected Person buildModelElement(Workspace returned) {
-		return returned.getModel().addPerson(name, description);
+	protected boolean startVisit(WorkspaceElementVisitor visitor) {
+		return visitor.startVisitPerson(this);
+	}
+
+	@Override
+	protected <Type> Type endVisit(WorkspaceElementVisitor<Type> visitor) {
+		return visitor.endVisitPerson(this);
 	}
 
 }

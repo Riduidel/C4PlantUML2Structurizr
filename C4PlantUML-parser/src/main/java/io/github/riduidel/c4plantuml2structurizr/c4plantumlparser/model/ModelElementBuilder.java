@@ -10,8 +10,6 @@ import io.github.riduidel.c4plantuml2structurizr.Configuration;
 public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilder, BuiltType extends StaticStructureElement> 
 	extends WorkspaceElementBuilder 
 	implements WithAlias<BuilderType>, WithLabel<BuilderType>, WithDescription<BuilderType> {
-	
-	private BuiltType built;
 
 	private String alias;
 	protected String name;
@@ -47,26 +45,15 @@ public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilde
 		return (BuilderType) this;
 	}
 
-	@Override
-	protected void beforeBuildingChildren(Configuration configuration, Stack<WorkspaceElementBuilder> stack, Workspace returned) {
-		super.beforeBuildingChildren(configuration, stack, returned);
-		if(built==null) {
-			built = buildModelElement(returned);
-			decorate(configuration, stack, returned, built);
-		}
+	public String getAlias() {
+		return alias;
 	}
 
-	protected void decorate(Configuration configuration, Stack<WorkspaceElementBuilder> stack, Workspace returned, BuiltType built2) {
-		setVariableName(configuration, built);
+	public String getName() {
+		return name;
 	}
 
-	private void setVariableName(Configuration configuration, BuiltType built) {
-		if(alias!=null) {
-			built.addProperty(configuration.variableProperty, alias);
-		}
+	public String getDescription() {
+		return description;
 	}
-
-	protected abstract BuiltType buildModelElement(Workspace returned);
-	
-	
 }

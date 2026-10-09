@@ -6,8 +6,13 @@ import com.structurizr.model.SoftwareSystem;
 public class SoftwareSystemBuilder extends ModelElementBuilder<SoftwareSystemBuilder, SoftwareSystem> {
 
 	@Override
-	protected SoftwareSystem buildModelElement(Workspace returned) {
-		return returned.getModel().addSoftwareSystem(name, description);
+	protected boolean startVisit(WorkspaceElementVisitor visitor) {
+		return visitor.startVisitSoftwareSystem(this);
+	}
+
+	@Override
+	protected <Type> Type endVisit(WorkspaceElementVisitor<Type> visitor) {
+		return visitor.endVisitSoftwareSystem(this);
 	}
 
 }

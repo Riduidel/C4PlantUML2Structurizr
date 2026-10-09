@@ -8,4 +8,13 @@ public class PlantUMLBlock extends WorkspaceElementBuilder {
 		this.blockName = blockName;
 	}
 
+	@Override
+	protected boolean startVisit(WorkspaceElementVisitor visitor) {
+		return visitor.startVisitPlantUMLBlock(this);
+	}
+
+	@Override
+	protected <Type> Type endVisit(WorkspaceElementVisitor<Type> visitor) {
+		return visitor.endVisitPlantUMLBlock(this);
+	}
 }

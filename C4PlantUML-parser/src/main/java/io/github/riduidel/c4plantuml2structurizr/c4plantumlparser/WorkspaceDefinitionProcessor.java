@@ -19,6 +19,7 @@ import io.github.riduidel.c4plantuml2structurizr.Configuration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WorkspaceElementBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser.C4PlantUMLParser;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
 
 public class WorkspaceDefinitionProcessor {
 	private static final Logger logger = Logger.getLogger(WorkspaceDefinitionProcessor.class.getName());
@@ -59,26 +60,32 @@ public class WorkspaceDefinitionProcessor {
 		return null;
 	}
 
+	/**
+	 * Parses a context diagram and add 
+	 * @param context
+	 * @return
+	 * @throws IOException
+	 */
 	private Workspace parseContext(File context) throws IOException {
-		return parseFile(context);
+		return parseFile(new ContextDiagram(context));
 	}
 
-	private Workspace parseFile(File plantUmlDiagram) throws IOException {
-		logger.info("Parsing file "+plantUmlDiagram.getAbsolutePath());
-		String fileContent = Files.readString(plantUmlDiagram.toPath());
-		C4PlantUMLDiagram diagram = new C4PlantUMLDiagram(plantUmlDiagram);
+	private Workspace parseFile(C4PlantUMLDiagram root) throws IOException {
+		File diagramFile = root.source;
+		logger.info("Parsing file "+diagramFile.getAbsolutePath());
+		String fileContent = Files.readString(diagramFile.toPath());
 		ParsingResult<WorkspaceElementBuilder> result = new ReportingParseRunner(parser.diagram())
-				.withValueStack(new DefaultValueStack<WorkspaceElementBuilder>(Arrays.asList(diagram)))
+				.withValueStack(new DefaultValueStack<WorkspaceElementBuilder>(Arrays.asList(root)))
 				.run(fileContent);
         if (result.hasErrors()) {
         	throw new RuntimeException(String.format("File %s has parsing errrors\n%s",
-        			plantUmlDiagram,
+        			diagramFile,
         			ErrorUtils.printParseErrors(result.parseErrors)));
         }
-        if(result.parseTreeRoot.getValue()==diagram) {
-        	return diagram.build(configuration);
+        if(result.parseTreeRoot.getValue()==root) {
+        	return root.build(configuration);
         } else {
-        	throw new RuntimeException(String.format("Parsing of file %s returned incorrect result (we do not have the same C4PlantUMLDiagram returned, but %s)", plantUmlDiagram, result.parseTreeRoot.getValue()));
+        	throw new RuntimeException(String.format("Parsing of file %s returned incorrect result (we do not have the same C4PlantUMLDiagram returned, but %s)", diagramFile, result.parseTreeRoot.getValue()));
         }
 	}
 }

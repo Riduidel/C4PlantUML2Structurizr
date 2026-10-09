@@ -22,7 +22,22 @@ public class RelationshipBuilder
 	private String targetAlias;
 	private String description;
 	private String technology;
-	private Relationship built;
+
+	@Override
+	public String toString() {
+		return "RelationshipBuilder [" + (sourceAlias != null ? "sourceAlias=" + sourceAlias + ", " : "")
+				+ (targetAlias != null ? "targetAlias=" + targetAlias + ", " : "")
+				+ (description != null ? "description=" + description : "")
+				+ (technology != null ? "technology=" + technology : "") + "]";
+	}
+	@Override
+	protected boolean startVisit(WorkspaceElementVisitor visitor) {
+		return visitor.startVisitRelationship(this);
+	}
+	@Override
+	protected <Type> Type endVisit(WorkspaceElementVisitor<Type> visitor) {
+		return visitor.endVisitRelationship(this);
+	}
 	public void setSourceAlias(String sourceAlias) {
 		this.sourceAlias = sourceAlias;
 	}
@@ -46,52 +61,16 @@ public class RelationshipBuilder
 		this.technology = technology;
 	}
 	
-	@Override
-	protected void beforeBuildingChildren(Configuration configuration, Stack<WorkspaceElementBuilder> stack,
-			Workspace returned) {
-		if(built==null) {
-			Model model = returned.getModel();
-			// Source and target are collections to get all declarations
-			List<Element> source = new ArrayList<Element>();
-			List<Element> target = new ArrayList<Element>();
-			for (Element element : model.getElements()) {
-				if(element.getProperties().containsKey(configuration.variableProperty)) {
-					String variable = element.getProperties().get(configuration.variableProperty);
-					if(sourceAlias.equals(variable)) {
-						source.add(element);
-					} else if(targetAlias.equals(variable)) {
-						target.add(element);
-					}
-				}
-			}
-			failIfBadlyDeclared(Map.of("source", source, "target", target));
-			// ok, source and target have only one elements, so create the relationship
-			built = new StructurizrHack().addRelationship(model, source.get(0), target.get(0), description, technology, InteractionStyle.Synchronous, new String[0]);
-		}
-		super.beforeBuildingChildren(configuration, stack, returned);
+	public String getSourceAlias() {
+		return sourceAlias;
 	}
-
-	private void failIfBadlyDeclared(Map<String, List<Element>> of) {
-		String message = of.entrySet().stream()
-			.filter(e -> e.getValue().size()!=1)
-			.map(e -> String.format("%s end of %s is badly declared, since %d model elements match\n", 
-					e.getKey(),
-					this,
-					e.getValue().stream()
-						.map(element -> element.toString())
-						.map(element -> "* "+element)
-						.collect(Collectors.joining("\n"))
-						))
-			.collect(Collectors.joining("\n"));
-		if(!message.isBlank()) {
-			throw new RuntimeException(message);
-		}
+	public String getTargetAlias() {
+		return targetAlias;
 	}
-	@Override
-	public String toString() {
-		return "RelationshipBuilder [" + (sourceAlias != null ? "sourceAlias=" + sourceAlias + ", " : "")
-				+ (targetAlias != null ? "targetAlias=" + targetAlias + ", " : "")
-				+ (description != null ? "description=" + description : "")
-				+ (technology != null ? "technology=" + technology : "") + "]";
+	public String getDescription() {
+		return description;
+	}
+	public String getTechnology() {
+		return technology;
 	}
 }
