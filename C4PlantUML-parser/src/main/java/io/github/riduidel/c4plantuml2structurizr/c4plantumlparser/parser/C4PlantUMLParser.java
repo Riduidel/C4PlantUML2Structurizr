@@ -38,20 +38,27 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 		return Sequence(
 				Sequence(String("@startuml"), ZeroOrMore(NoneOf("\n")), push(new PlantUMLBlock(match().trim())), String("\n")
 						),
-				ZeroOrMore(
-						Include(),
-						// There can be empty lines
-						Whitespace(),
-						Person(),
-						System(),
-						Relationship()
-						).label("diagram content"),
+				PlantUMLBockContent(),
 				String("@enduml"),
 				// Add this node to its parent
 				peek(1).add(pop()));
 		
 	}
 	
+	public Rule PlantUMLBockContent() {
+		return ZeroOrMore(
+				TestNot("@enduml"),
+				FirstOf(
+					Include(),
+					SystemOrBoundary(),
+					Person(),
+					Relationship(),
+					// There can be empty lines
+					Whitespace()
+				).label("Unordered diagram content")
+			).label("Total diagram content");
+	}
+
 	void setSourceAlias(Context context) {
 		((RelationshipBuilder) context.getValueStack().peek()).setSourceAlias(match());
 	}
@@ -84,7 +91,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	public Rule Person() {
 		return Sequence(String("Person"),
-				Optional(String("Ext")),
+				Optional(String("_Ext")),
 				Ch('('),
 				push(new PersonBuilder()),
 				AliasDeclaration(),
@@ -100,9 +107,15 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				.label("PersonBuilder...(....)");
 	}
 	
-	public Rule System() {
-		return Sequence(String("System"),
-				Optional(String("Ext")),
+	public Rule SystemOrBoundary() {
+		return Sequence("System",
+				Optional('_'),
+				FirstOf(System(), SystemBoundary())
+				);
+	}
+	
+	public Rule System(Rule...descendants) {
+		return Sequence(Optional(String("Ext")),
 				Ch('('),
 				push(new SoftwareSystemBuilder()),
 				AliasDeclaration(),
@@ -112,10 +125,37 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 					),
 				Ch(')'),
 				Whitespace(),
+				SubBlock(descendants),
 				// Add relationship to its parent node
 				peek(1).add(pop())
 				)
 				.label("SystemBuilder...(....)");
+	}
+	
+	public Rule SystemBoundary(Rule...descendants) {
+		return Sequence(Optional(String("Boundary")),
+				Ch('('),
+				push(new SoftwareSystemBuilder()),
+				AliasDeclaration(),
+				LabelDeclaration(),
+//				ZeroOrMore(
+//					DescriptionDeclaration()
+//					),
+				Ch(')'),
+				Whitespace(),
+				SubBlock(descendants),
+				// Add relationship to its parent node
+				peek(1).add(pop())
+				)
+				.label("SystemBuilder...(....)");
+	}
+	
+	Rule SubBlock(Rule...descendants) {
+		return Optional(Sequence(Whitespace(), '{', 
+				Whitespace(),
+//				ZeroOrMore(descendants, descendants, descendants),
+				Whitespace(),
+				'}'));
 	}
 	
 	void setDescription(Context context) {
@@ -269,7 +309,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
                 OneOrMore(AnyOf(" \t\r\n\f").label("Whitespace")),
 
                 // traditional comment
-                Sequence("/'", ZeroOrMore(TestNot("'/"), ANY), "*/")
+                Sequence("/'", ZeroOrMore(TestNot("'/"), ANY), "'/")
                 	.label("Traditionnal comment"),
 
                 // end of line comment
