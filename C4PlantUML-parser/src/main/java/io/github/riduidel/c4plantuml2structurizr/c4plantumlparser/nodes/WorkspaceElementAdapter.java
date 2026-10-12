@@ -1,5 +1,10 @@
-package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model;
+package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes;
 
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContainerDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
 
 public abstract class WorkspaceElementAdapter<Returned> implements WorkspaceElementVisitor<Returned> {
@@ -67,6 +72,26 @@ public abstract class WorkspaceElementAdapter<Returned> implements WorkspaceElem
 
 	@Override
 	public Returned endVisitContextDiagram(ContextDiagram contextDiagram) {
+		return returned;
+	}
+	
+	@Override
+	public boolean startVisitContainerDiagram(ContainerDiagram containerDiagram) {
+		return true;
+	}
+	
+	@Override
+	public Returned endVisitContainerDiagram(ContainerDiagram containerDiagram) {
+		return returned;
+	}
+	
+	@Override
+	public boolean startVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
+		return true;
+	}
+	
+	@Override
+	public Returned endVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
 		return returned;
 	}
 }

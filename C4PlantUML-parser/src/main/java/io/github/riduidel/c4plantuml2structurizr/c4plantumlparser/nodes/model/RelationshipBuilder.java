@@ -1,4 +1,4 @@
-package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model;
+package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,10 @@ import com.structurizr.model.Model;
 import com.structurizr.model.Relationship;
 
 import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
 import io.github.riduidel.c4plantuml2structurizr.copier.StructurizrHack;
 
 public class RelationshipBuilder 

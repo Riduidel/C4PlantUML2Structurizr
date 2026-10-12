@@ -1,7 +1,9 @@
-package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model;
+package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model;
 
 import com.structurizr.Workspace;
 import com.structurizr.model.Person;
+
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
 
 public class PersonBuilder extends ModelElementBuilder<PersonBuilder, Person> {
 

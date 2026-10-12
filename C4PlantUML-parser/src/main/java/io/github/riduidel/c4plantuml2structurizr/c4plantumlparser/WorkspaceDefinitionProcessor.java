@@ -13,12 +13,14 @@ import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.DefaultValueStack;
 import org.parboiled.support.ParsingResult;
 
+import com.github.fge.lambdas.Throwing;
 import com.structurizr.Workspace;
 
 import io.github.riduidel.c4plantuml2structurizr.Configuration;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.C4PlantUMLDiagram;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WorkspaceElementBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser.C4PlantUMLParser;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContainerDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
 
 public class WorkspaceDefinitionProcessor {
@@ -39,15 +41,9 @@ public class WorkspaceDefinitionProcessor {
 		// First, isolate interesting diagrams
 		DetectedDiagrams diagrams = detector.detectDiagramsIn(diagramFiles);
 		Workspace returned = parseContext(diagrams.context());
-		diagrams.containers().stream().forEach(file -> parseContainersIn(returned, file));
+		diagrams.containers().stream().forEach(Throwing.consumer(file -> parseContainersIn(returned, file)));
 		diagrams.components().stream().forEach(file -> parseComponentsIn(returned, file));
-		diagrams.others().stream().forEach(file -> parseOthersIn(returned, file));
 		return returned;
-	}
-
-	private Object parseOthersIn(Workspace returned, File file) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	private Object parseComponentsIn(Workspace returned, File file) {
@@ -55,9 +51,8 @@ public class WorkspaceDefinitionProcessor {
 		return null;
 	}
 
-	private Object parseContainersIn(Workspace returned, File file) {
-		// TODO Auto-generated method stub
-		return null;
+	private Object parseContainersIn(Workspace returned, File container) throws IOException {
+		return parseFile(new ContainerDiagram(returned, container));
 	}
 
 	/**

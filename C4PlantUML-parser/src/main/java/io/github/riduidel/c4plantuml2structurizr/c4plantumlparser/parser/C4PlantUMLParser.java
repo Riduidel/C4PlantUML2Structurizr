@@ -15,16 +15,16 @@ import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.support.Var;
 
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.Include;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.PersonBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.PlantUMLBlock;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.RelationshipBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.SoftwareSystemBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WithAlias;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WithDescription;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WithLabel;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WithTechnology;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WorkspaceElementBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithAlias;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
 
 /**
  * Parses a plantuml diagram.

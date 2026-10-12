@@ -16,7 +16,6 @@ public class DiagramTypeDetector {
 		List<File> contextFiles = new ArrayList<File>();
 		List<File> containerFiles = new ArrayList<File>();
 		List<File> componentFiles = new ArrayList<File>();
-		List<File> otherFiles = new ArrayList<File>(diagrams);
 		for(File f : diagrams) {
 			if(context.matches(f.toPath())) {
 				contextFiles.add(f);
@@ -26,9 +25,6 @@ public class DiagramTypeDetector {
 				componentFiles.add(f);
 			}
 		}
-		otherFiles.removeAll(contextFiles);
-		otherFiles.removeAll(containerFiles);
-		otherFiles.removeAll(componentFiles);
 		if(contextFiles.size()==0) {
 			throw new UnsupportedOperationException(String.format("We don't know how to handle the case of missingcontext diagrams"));
 		} else if(contextFiles.size()>1){
@@ -37,7 +33,7 @@ public class DiagramTypeDetector {
 						.map(f -> "* "+f.getAbsolutePath())
 						.collect(Collectors.joining("\n"))));
 		} else {
-			return new DetectedDiagrams(contextFiles.get(0), containerFiles, componentFiles, otherFiles);
+			return new DetectedDiagrams(contextFiles.get(0), containerFiles, componentFiles);
 		}
 	}
 

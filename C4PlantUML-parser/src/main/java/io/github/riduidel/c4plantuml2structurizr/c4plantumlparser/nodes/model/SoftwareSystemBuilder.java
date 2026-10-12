@@ -1,7 +1,8 @@
-package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model;
+package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model;
 
-import com.structurizr.Workspace;
 import com.structurizr.model.SoftwareSystem;
+
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
 
 public class SoftwareSystemBuilder extends ModelElementBuilder<SoftwareSystemBuilder, SoftwareSystem> {
 

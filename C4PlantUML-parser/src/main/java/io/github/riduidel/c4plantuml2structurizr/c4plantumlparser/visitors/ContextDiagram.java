@@ -7,9 +7,9 @@ import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.SystemContextView;
 
 import io.github.riduidel.c4plantuml2structurizr.Configuration;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.C4PlantUMLDiagram;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.SoftwareSystemBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WorkspaceElementVisitor;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
 
 public class ContextDiagram extends C4PlantUMLDiagram {
 	public static class BuildContextDiagramVisitor extends WorkspaceBuilderVisitor {

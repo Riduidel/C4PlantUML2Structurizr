@@ -16,14 +16,14 @@ import com.structurizr.model.SoftwareSystem;
 import com.structurizr.model.StaticStructureElement;
 
 import io.github.riduidel.c4plantuml2structurizr.Configuration;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.C4PlantUMLDiagram;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.Include;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.ModelElementBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.PersonBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.PlantUMLBlock;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.RelationshipBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.SoftwareSystemBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model.WorkspaceElementAdapter;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementAdapter;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ModelElementBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram.BuildContextDiagramVisitor;
 import io.github.riduidel.c4plantuml2structurizr.copier.StructurizrHack;
 

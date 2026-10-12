@@ -1,4 +1,4 @@
-package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.model;
+package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes;
 
 public interface WithTechnology<Type> {
 	public Type withTechnology(String technology);
