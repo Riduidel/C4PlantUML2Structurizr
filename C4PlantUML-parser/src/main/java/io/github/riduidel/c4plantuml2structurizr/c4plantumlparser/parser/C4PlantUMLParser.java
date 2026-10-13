@@ -2,6 +2,7 @@ package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -22,6 +23,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDesc
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.BoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
@@ -116,44 +118,14 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 		};
 		return Sequence("System",
 				Optional('_'),
-				FirstOf(System(descendants), SystemBoundary(descendants))
+				FirstOf(ElementBuilder(
+							context -> context.getValueStack().push(new SystemBuilder()), 
+							descendants),
+						ElementBuilderBoundary(
+							context -> context.getValueStack().push(new SystemBoundaryBuilder()), 
+							descendants))
 				);
 	}
-	
-	public Rule System(Rule...descendants) {
-		return Sequence(Optional(String("Ext")),
-				Ch('('),
-				push(new SystemBuilder()),
-				AliasDeclaration(),
-				LabelDeclaration(),
-				ZeroOrMore(
-					DescriptionDeclaration()
-					),
-				Ch(')'),
-				SubBlock(descendants),
-				// Add relationship to its parent node
-				peek(1).add(pop())
-				)
-				.label("SystemBuilder...(....)");
-	}
-	
-	public Rule SystemBoundary(Rule...descendants) {
-		return Sequence(Optional(String("Boundary")),
-				Ch('('),
-				push(new SystemBoundaryBuilder()),
-				AliasDeclaration(),
-				LabelDeclaration(),
-//				ZeroOrMore(
-//					DescriptionDeclaration()
-//					),
-				Ch(')'),
-				SubBlock(descendants),
-				// Add relationship to its parent node
-				peek(1).add(pop())
-				)
-				.label("SystemBuilder...(....)");
-	}
-
 	
 	public Rule ContainerOrBoundary() {
 		Rule[] descendants = new Rule[] {
@@ -161,14 +133,19 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 		};
 		return Sequence("Container",
 				Optional('_'),
-				FirstOf(Container(descendants), ContainerBoundary(descendants))
+				FirstOf(ElementBuilder(
+							context -> context.getValueStack().push(new ContainerBuilder()), 
+							descendants), 
+						ElementBuilderBoundary(
+							context -> context.getValueStack().push(new ContainerBoundaryBuilder()), 
+							descendants))
 				);
 	}
 	
-	public Rule Container(Rule...descendants) {
+	public Rule ElementBuilder(Consumer<Context> consumer, Rule...descendants) {
 		return Sequence(Optional(String("Ext")),
 				Ch('('),
-				push(new ContainerBuilder()),
+				runAction(consumer),
 				AliasDeclaration(),
 				LabelDeclaration(),
 				ZeroOrMore(
@@ -178,14 +155,13 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				SubBlock(descendants),
 				// Add relationship to its parent node
 				peek(1).add(pop())
-				)
-				.label("ContainerBuilder...(....)");
+				);
 	}
 	
-	public Rule ContainerBoundary(Rule...descendants) {
+	public Rule ElementBuilderBoundary(Consumer<Context> consumer, Rule...descendants) {
 		return Sequence(Optional(String("Boundary")),
 				Ch('('),
-				push(new ContainerBoundaryBuilder()),
+				runAction(consumer),
 				AliasDeclaration(),
 				LabelDeclaration(),
 //				ZeroOrMore(
@@ -195,10 +171,10 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				SubBlock(descendants),
 				// Add relationship to its parent node
 				peek(1).add(pop())
-				)
-				.label("ContainerBoundaryBuilder...(....)");
+				);
 	}
-	
+
+
 	Rule SubBlock(Rule...descendants) {
 		return Optional(Sequence(Whitespace(), '{', 
 				Whitespace(),
@@ -391,5 +367,4 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 			}
 		};
 	}
-	
 }

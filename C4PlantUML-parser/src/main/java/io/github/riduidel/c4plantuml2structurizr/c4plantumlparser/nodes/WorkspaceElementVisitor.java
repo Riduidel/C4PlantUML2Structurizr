@@ -1,5 +1,6 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes;
 
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
@@ -45,5 +46,9 @@ public interface WorkspaceElementVisitor<Returned> {
 	boolean startVisitContainer(ContainerBuilder containerBuilder);
 
 	Returned endVisitContainer(ContainerBuilder containerBuilder);
+
+	boolean startVisitContainerBoundary(ContainerBoundaryBuilder containerBoundaryBuilder);
+
+	Returned endVisitContainerBoundary(ContainerBoundaryBuilder containerBoundaryBuilder);
 
 }
