@@ -6,5 +6,5 @@ System_Boundary(systemAlias, "A system") {
 	Container(containerAlias, "A container", "This is a container")
 }
 
-Rel(personAlias, containerAlias, "A relationship between person and container", "This is a technology")
+Rel(personAlias, containerAlias, "A relationship between person and container", "This is person to container technology")
 @enduml

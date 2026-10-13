@@ -4,7 +4,7 @@ import com.structurizr.model.SoftwareSystem;
 
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
 
-public class SoftwareSystemBuilder extends ModelElementBuilder<SoftwareSystemBuilder, SoftwareSystem> {
+public class SystemBuilder extends ModelElementBuilder<SystemBuilder, SoftwareSystem> {
 
 	@Override
 	protected boolean startVisit(WorkspaceElementVisitor visitor) {

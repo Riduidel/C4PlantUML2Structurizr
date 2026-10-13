@@ -1,9 +1,10 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes;
 
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContainerDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
 
@@ -56,12 +57,32 @@ public abstract class WorkspaceElementAdapter<Returned> implements WorkspaceElem
 	}
 
 	@Override
-	public boolean startVisitSoftwareSystem(SoftwareSystemBuilder softwareSystemBuilder) {
+	public boolean startVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
 		return true;
 	}
 
 	@Override
-	public Returned endVisitSoftwareSystem(SoftwareSystemBuilder softwareSystemBuilder) {
+	public Returned endVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
+		return returned;
+	}
+	
+	@Override
+	public boolean startVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
+		return true;
+	}
+	
+	@Override
+	public Returned endVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
+		return returned;
+	}
+	
+	@Override
+	public boolean startVisitContainer(ContainerBuilder containerBuilder) {
+		return true;
+	}
+	
+	@Override
+	public Returned endVisitContainer(ContainerBuilder containerBuilder) {
 		return returned;
 	}
 
@@ -82,16 +103,6 @@ public abstract class WorkspaceElementAdapter<Returned> implements WorkspaceElem
 	
 	@Override
 	public Returned endVisitContainerDiagram(ContainerDiagram containerDiagram) {
-		return returned;
-	}
-	
-	@Override
-	public boolean startVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
-		return true;
-	}
-	
-	@Override
-	public Returned endVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
 		return returned;
 	}
 }

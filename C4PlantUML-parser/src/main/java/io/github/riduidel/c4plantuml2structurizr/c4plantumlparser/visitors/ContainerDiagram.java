@@ -9,7 +9,8 @@ import com.structurizr.view.ContainerView;
 import io.github.riduidel.c4plantuml2structurizr.Configuration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
 
 public class ContainerDiagram extends C4PlantUMLDiagram {
 	public static class BuildContainerDiagramVisitor extends WorkspaceBuilderVisitor {
@@ -20,21 +21,31 @@ public class ContainerDiagram extends C4PlantUMLDiagram {
 			this.returned = workspace;
 			this.source = source;
 		}
+		
+		private void createContainerDiagramFor(String alias, String name) {
+			if(source.equals(diagrams.peek().source)) {
+				// software system is declared in file, so add the corresponding view
+				ContainerView view = returned.getViews().createContainerView(
+						(SoftwareSystem) stack.peek(), 
+						String.format("containers_of_%s", alias));
+				view.setDescription(String.format("Container view of \"%s\"", name));
+			}
+		}
 
 		/**
 		 * When we stop visiting a software system, if containing diagram is this diagram (as defined by the source file)
 		 * we generate a view for that software system
 		 */
 		@Override
-		public Workspace endVisitSoftwareSystem(SoftwareSystemBuilder softwareSystemBuilder) {
-			if(source.equals(diagrams.peek().source)) {
-				// software system is declared in file, so add the corresponding view
-				ContainerView view = returned.getViews().createContainerView(
-						(SoftwareSystem) stack.peek(), 
-						String.format("containers_of_%s", softwareSystemBuilder.getAlias()));
-				view.setDescription(String.format("Container view of \"%s\"", softwareSystemBuilder.getName()));
-			}
+		public Workspace endVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
+			createContainerDiagramFor(softwareSystemBuilder.getAlias(), softwareSystemBuilder.getName());
 			return super.endVisitSoftwareSystem(softwareSystemBuilder);
+		}
+		
+		@Override
+		public Workspace endVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
+			createContainerDiagramFor(softwareSystemBoundaryBuilder.getAlias(), softwareSystemBoundaryBuilder.getName());
+			return super.endVisitSystemBoundary(softwareSystemBoundaryBuilder);
 		}
 		
 	}

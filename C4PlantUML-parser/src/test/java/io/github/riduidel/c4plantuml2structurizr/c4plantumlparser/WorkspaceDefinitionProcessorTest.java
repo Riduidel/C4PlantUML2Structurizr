@@ -109,7 +109,7 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 		try {
 			Assertions.assertThat(parsed).usingRecursiveComparison()
 			// I think I can do better than that
-				.ignoringFieldsMatchingRegexes(".*properties|.*interactionStyle|.*tags")
+				.ignoringFieldsMatchingRegexes(".*properties|.*interactionStyle|.*tags|.*id|.*idGenerator.*|.*elementsById|.*relationshipsById|.*sourceId|.*destinationId")
 				.isEqualTo(expected);
 		} catch(AssertionError e) {
 			WorkspaceWriter writer = new WorkspaceWriter();

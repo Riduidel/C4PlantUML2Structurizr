@@ -9,7 +9,7 @@ import com.structurizr.view.SystemContextView;
 import io.github.riduidel.c4plantuml2structurizr.Configuration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
 
 public class ContextDiagram extends C4PlantUMLDiagram {
 	public static class BuildContextDiagramVisitor extends WorkspaceBuilderVisitor {
@@ -26,7 +26,7 @@ public class ContextDiagram extends C4PlantUMLDiagram {
 		 * we generate a view for that software system
 		 */
 		@Override
-		public Workspace endVisitSoftwareSystem(SoftwareSystemBuilder softwareSystemBuilder) {
+		public Workspace endVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
 			if(source.equals(diagrams.peek().source)) {
 				// software system is declared in file, so add the corresponding view
 				SystemContextView view = returned.getViews().createSystemContextView(

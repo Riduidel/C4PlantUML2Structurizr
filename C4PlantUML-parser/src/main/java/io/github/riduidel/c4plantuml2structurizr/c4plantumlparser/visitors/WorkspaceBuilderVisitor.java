@@ -7,6 +7,7 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.structurizr.Workspace;
+import com.structurizr.model.Container;
 import com.structurizr.model.Element;
 import com.structurizr.model.InteractionStyle;
 import com.structurizr.model.Model;
@@ -20,10 +21,12 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantU
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementAdapter;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ModelElementBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram.BuildContextDiagramVisitor;
 import io.github.riduidel.c4plantuml2structurizr.copier.StructurizrHack;
 
@@ -69,13 +72,16 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	
 	private <Type extends StaticStructureElement> void createModelElement(ModelElementBuilder<?, Type> builder, Type element) {
 		associateAlias(builder, element);
-		stack.push(element);
+		element.setDescription(builder.getDescription());
 	}
 	
 	@Override
 	public boolean startVisitPerson(PersonBuilder personBuilder) {
-		Person person = returned.getModel().addPerson(personBuilder.getName(), personBuilder.getDescription());
-		createModelElement(personBuilder, person);
+		if(returned.getModel().getPersonWithName(personBuilder.getName())==null) {
+			Person person = returned.getModel().addPerson(personBuilder.getName(), personBuilder.getDescription());
+			createModelElement(personBuilder, person);
+		}
+		stack.push(returned.getModel().getPersonWithName(personBuilder.getName()));
 		return true;
 	}
 
@@ -86,16 +92,53 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	}
 	
 	@Override
-	public boolean startVisitSoftwareSystem(SoftwareSystemBuilder softwareSystemBuilder) {
-		SoftwareSystem software = returned.getModel().addSoftwareSystem(softwareSystemBuilder.getName(), softwareSystemBuilder.getDescription());
-		createModelElement(softwareSystemBuilder, software);
+	public boolean startVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
+		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getName())==null) {
+			SoftwareSystem software = returned.getModel().addSoftwareSystem(softwareSystemBuilder.getName(), softwareSystemBuilder.getDescription());
+			createModelElement(softwareSystemBuilder, software);
+		}
+		stack.push(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getName()));
 		return true;
 	}
 	
 	@Override
-	public Workspace endVisitSoftwareSystem(SoftwareSystemBuilder softwareSystemBuilder) {
+	public Workspace endVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
 		stack.pop();
 		return super.endVisitSoftwareSystem(softwareSystemBuilder);
+	}
+	
+	@Override
+	public boolean startVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
+		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBoundaryBuilder.getName())!=null) {
+			stack.push(returned.getModel().getSoftwareSystemWithName(softwareSystemBoundaryBuilder.getName()));
+			// TODO implement group that is not linked to a softwaresystem
+		}
+		return true;
+	}
+	
+	@Override
+	public Workspace endVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
+		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBoundaryBuilder.getName())!=null) {
+			stack.pop();
+		}
+		return super.endVisitSystemBoundary(softwareSystemBoundaryBuilder);
+	}
+
+	@Override
+	public boolean startVisitContainer(ContainerBuilder containerBuilder) {
+		SoftwareSystem containingSystem = (SoftwareSystem) stack.peek();
+		if(containingSystem.getContainerWithName(containerBuilder.getName())==null) {
+			Container created = containingSystem.addContainer(containerBuilder.getName());
+			createModelElement(containerBuilder, created);
+		}
+		stack.push(containingSystem.getContainerWithName(containerBuilder.getName()));
+		return true;
+	}
+
+	@Override
+	public Workspace endVisitContainer(ContainerBuilder containerBuilder) {
+		stack.pop();
+		return super.endVisitContainer(containerBuilder);
 	}
 	
 	@Override
@@ -144,25 +187,35 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 		}
 	}
 	
-	@Override
-	public boolean startVistContextDiagram(ContextDiagram contextDiagram) {
-		return startVisitDiagram(contextDiagram);
-	}
-	
 	private boolean startVisitDiagram(C4PlantUMLDiagram contextDiagram) {
 		stack.push(contextDiagram);
 		diagrams.push(contextDiagram);
 		return true;
+	}
+	
+	private Workspace endVisitDiagram(C4PlantUMLDiagram contextDiagram) {
+		stack.pop();
+		diagrams.pop();
+		return returned;
+	}
+	
+	@Override
+	public boolean startVistContextDiagram(ContextDiagram contextDiagram) {
+		return startVisitDiagram(contextDiagram);
 	}
 
 	@Override
 	public Workspace endVisitContextDiagram(ContextDiagram contextDiagram) {
 		return endVisitDiagram(contextDiagram);
 	}
-
-	private Workspace endVisitDiagram(C4PlantUMLDiagram contextDiagram) {
-		stack.pop();
-		diagrams.pop();
-		return returned;
+	
+	@Override
+	public boolean startVisitContainerDiagram(ContainerDiagram containerDiagram) {
+		return startVisitDiagram(containerDiagram);
+	}
+	
+	@Override
+	public Workspace endVisitContainerDiagram(ContainerDiagram containerDiagram) {
+		return endVisitDiagram(containerDiagram);
 	}
 }

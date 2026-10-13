@@ -22,9 +22,12 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDesc
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SoftwareSystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
 
 /**
  * Parses a plantuml diagram.
@@ -108,23 +111,25 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 	}
 	
 	public Rule SystemOrBoundary() {
+		Rule[] descendants = new Rule[] {
+			ContainerOrBoundary()
+		};
 		return Sequence("System",
 				Optional('_'),
-				FirstOf(System(), SystemBoundary())
+				FirstOf(System(descendants), SystemBoundary(descendants))
 				);
 	}
 	
 	public Rule System(Rule...descendants) {
 		return Sequence(Optional(String("Ext")),
 				Ch('('),
-				push(new SoftwareSystemBuilder()),
+				push(new SystemBuilder()),
 				AliasDeclaration(),
 				LabelDeclaration(),
 				ZeroOrMore(
 					DescriptionDeclaration()
 					),
 				Ch(')'),
-				Whitespace(),
 				SubBlock(descendants),
 				// Add relationship to its parent node
 				peek(1).add(pop())
@@ -135,25 +140,69 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 	public Rule SystemBoundary(Rule...descendants) {
 		return Sequence(Optional(String("Boundary")),
 				Ch('('),
-				push(new SoftwareSystemBuilder()),
+				push(new SystemBoundaryBuilder()),
 				AliasDeclaration(),
 				LabelDeclaration(),
 //				ZeroOrMore(
 //					DescriptionDeclaration()
 //					),
 				Ch(')'),
-				Whitespace(),
 				SubBlock(descendants),
 				// Add relationship to its parent node
 				peek(1).add(pop())
 				)
 				.label("SystemBuilder...(....)");
 	}
+
+	
+	public Rule ContainerOrBoundary() {
+		Rule[] descendants = new Rule[] {
+//			ContainerOrBoundary()
+		};
+		return Sequence("Container",
+				Optional('_'),
+				FirstOf(Container(descendants), ContainerBoundary(descendants))
+				);
+	}
+	
+	public Rule Container(Rule...descendants) {
+		return Sequence(Optional(String("Ext")),
+				Ch('('),
+				push(new ContainerBuilder()),
+				AliasDeclaration(),
+				LabelDeclaration(),
+				ZeroOrMore(
+					DescriptionDeclaration()
+					),
+				Ch(')'),
+				SubBlock(descendants),
+				// Add relationship to its parent node
+				peek(1).add(pop())
+				)
+				.label("ContainerBuilder...(....)");
+	}
+	
+	public Rule ContainerBoundary(Rule...descendants) {
+		return Sequence(Optional(String("Boundary")),
+				Ch('('),
+				push(new ContainerBoundaryBuilder()),
+				AliasDeclaration(),
+				LabelDeclaration(),
+//				ZeroOrMore(
+//					DescriptionDeclaration()
+//					),
+				Ch(')'),
+				SubBlock(descendants),
+				// Add relationship to its parent node
+				peek(1).add(pop())
+				)
+				.label("ContainerBoundaryBuilder...(....)");
+	}
 	
 	Rule SubBlock(Rule...descendants) {
 		return Optional(Sequence(Whitespace(), '{', 
 				Whitespace(),
-//				ZeroOrMore(descendants, descendants, descendants),
+				ZeroOrMore(FirstOf(descendants)),
 				Whitespace(),
 				'}'));
 	}
