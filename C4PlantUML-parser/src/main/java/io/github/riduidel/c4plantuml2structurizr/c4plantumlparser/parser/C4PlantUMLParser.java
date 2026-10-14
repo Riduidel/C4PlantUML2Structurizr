@@ -26,6 +26,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Workspac
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.BoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ComponentBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
@@ -118,10 +119,10 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 		};
 		return Sequence("System",
 				Optional('_'),
-				FirstOf(ElementBuilder(
+				FirstOf(ModelElementBuilder(
 							context -> context.getValueStack().push(new SystemBuilder()), 
 							descendants),
-						ElementBuilderBoundary(
+						ModelElementBoundaryBuilder(
 							context -> context.getValueStack().push(new SystemBoundaryBuilder()), 
 							descendants))
 				);
@@ -129,20 +130,30 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 	
 	public Rule ContainerOrBoundary() {
 		Rule[] descendants = new Rule[] {
-//			ContainerOrBoundary()
+			Component()
 		};
 		return Sequence("Container",
 				Optional('_'),
-				FirstOf(ElementBuilder(
+				FirstOf(ModelElementBuilder(
 							context -> context.getValueStack().push(new ContainerBuilder()), 
 							descendants), 
-						ElementBuilderBoundary(
+						ModelElementBoundaryBuilder(
 							context -> context.getValueStack().push(new ContainerBoundaryBuilder()), 
 							descendants))
 				);
 	}
 	
-	public Rule ElementBuilder(Consumer<Context> consumer, Rule...descendants) {
+	public Rule Component() {
+		Rule[] descendants = new Rule[] {
+		};
+		return Sequence("Component",
+				ModelElementBuilder(
+							context -> context.getValueStack().push(new ComponentBuilder()), 
+							descendants)
+				);
+	}
+	
+	public Rule ModelElementBuilder(Consumer<Context> consumer, Rule...descendants) {
 		return Sequence(Optional(String("Ext")),
 				Ch('('),
 				runAction(consumer),
@@ -158,7 +169,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				);
 	}
 	
-	public Rule ElementBuilderBoundary(Consumer<Context> consumer, Rule...descendants) {
+	public Rule ModelElementBoundaryBuilder(Consumer<Context> consumer, Rule...descendants) {
 		return Sequence(Optional(String("Boundary")),
 				Ch('('),
 				runAction(consumer),

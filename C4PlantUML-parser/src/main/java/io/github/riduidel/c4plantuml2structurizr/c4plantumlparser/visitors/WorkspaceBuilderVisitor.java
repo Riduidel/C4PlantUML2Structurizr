@@ -7,6 +7,7 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.structurizr.Workspace;
+import com.structurizr.model.Component;
 import com.structurizr.model.Container;
 import com.structurizr.model.Element;
 import com.structurizr.model.InteractionStyle;
@@ -21,7 +22,9 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantU
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementAdapter;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ComponentBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ModelElementBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
@@ -70,7 +73,7 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 		element.addProperty(configuration.variableProperty, builder.getAlias());
 	}
 	
-	private <Type extends StaticStructureElement> void createModelElement(ModelElementBuilder<?, Type> builder, Type element) {
+	private <Type extends StaticStructureElement> void fillModelElement(ModelElementBuilder<?, Type> builder, Type element) {
 		associateAlias(builder, element);
 		element.setDescription(builder.getDescription());
 	}
@@ -79,7 +82,7 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	public boolean startVisitPerson(PersonBuilder personBuilder) {
 		if(returned.getModel().getPersonWithName(personBuilder.getName())==null) {
 			Person person = returned.getModel().addPerson(personBuilder.getName(), personBuilder.getDescription());
-			createModelElement(personBuilder, person);
+			fillModelElement(personBuilder, person);
 		}
 		stack.push(returned.getModel().getPersonWithName(personBuilder.getName()));
 		return true;
@@ -95,7 +98,7 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	public boolean startVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
 		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getName())==null) {
 			SoftwareSystem software = returned.getModel().addSoftwareSystem(softwareSystemBuilder.getName(), softwareSystemBuilder.getDescription());
-			createModelElement(softwareSystemBuilder, software);
+			fillModelElement(softwareSystemBuilder, software);
 		}
 		stack.push(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getName()));
 		return true;
@@ -118,8 +121,11 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	
 	@Override
 	public Workspace endVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder) {
-		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBoundaryBuilder.getName())!=null) {
-			stack.pop();
+		if(stack.peek() instanceof SoftwareSystem) {
+			SoftwareSystem peeked = (SoftwareSystem) stack.peek();
+			if(peeked.getName().equals(softwareSystemBoundaryBuilder.getName())) {
+				stack.pop();
+			}
 		}
 		return super.endVisitSystemBoundary(softwareSystemBoundaryBuilder);
 	}
@@ -129,7 +135,8 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 		SoftwareSystem containingSystem = (SoftwareSystem) stack.peek();
 		if(containingSystem.getContainerWithName(containerBuilder.getName())==null) {
 			Container created = containingSystem.addContainer(containerBuilder.getName());
-			createModelElement(containerBuilder, created);
+			fillModelElement(containerBuilder, created);
+			created.setTechnology(containerBuilder.getTechnology());
 		}
 		stack.push(containingSystem.getContainerWithName(containerBuilder.getName()));
 		return true;
@@ -139,6 +146,46 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	public Workspace endVisitContainer(ContainerBuilder containerBuilder) {
 		stack.pop();
 		return super.endVisitContainer(containerBuilder);
+	}
+	
+	@Override
+	public boolean startVisitContainerBoundary(ContainerBoundaryBuilder containerBoundaryBuilder) {
+		SoftwareSystem containingSystem = (SoftwareSystem) stack.peek();
+
+		if(containingSystem.getContainerWithName(containerBoundaryBuilder.getName())!=null) {
+			stack.push(containingSystem.getContainerWithName(containerBoundaryBuilder.getName()));
+			// TODO implement group that is not linked to a softwaresystem
+		}
+		return true;
+	}
+	
+	@Override
+	public Workspace endVisitContainerBoundary(ContainerBoundaryBuilder containerBoundaryBuilder) {
+		if(stack.peek() instanceof Container) {
+			Container peeked = (Container) stack.peek();
+			if(peeked.getName().equals(containerBoundaryBuilder.getName())) {
+				stack.pop();
+			}
+		}
+		return super.endVisitContainerBoundary(containerBoundaryBuilder);
+	}
+	
+	@Override
+	public boolean startVisitComponent(ComponentBuilder componentBuilder) {
+		Container containingContainer = (Container) stack.peek();
+		if(containingContainer.getComponentWithName(componentBuilder.getName())==null) {
+			Component created = containingContainer.addComponent(componentBuilder.getName());
+			fillModelElement(componentBuilder, created);
+			created.setTechnology(componentBuilder.getTechnology());
+		}
+		stack.push(containingContainer.getComponentWithName(componentBuilder.getName()));
+		return true;
+	}
+	
+	@Override
+	public Workspace endVisitComponent(ComponentBuilder componentBuilder) {
+		stack.pop();
+		return super.endVisitComponent(componentBuilder);
 	}
 	
 	@Override
@@ -217,5 +264,15 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	@Override
 	public Workspace endVisitContainerDiagram(ContainerDiagram containerDiagram) {
 		return endVisitDiagram(containerDiagram);
+	}
+	
+	@Override
+	public boolean startVisitComponentDiagram(ComponentDiagram componentDiagram) {
+		return startVisitDiagram(componentDiagram);
+	}
+	
+	@Override
+	public Workspace endVisitComponentDiagram(ComponentDiagram componentDiagram) {
+		return endVisitDiagram(componentDiagram);
 	}
 }

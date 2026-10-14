@@ -32,24 +32,6 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 	private static final Logger logger = Logger.getLogger(WorkspaceDefinitionProcessorTest.class.getName());
 	static PathMatcher plantuml = FileSystems.getDefault().getPathMatcher("glob:**/*.{plantuml,puml}");
 	static PathMatcher structurizr = FileSystems.getDefault().getPathMatcher("glob:**/*.dsl");
-	
-	static private Arguments toArguments(File testFolder) throws IOException {
-		List<File> plantUmlFiles = Files.walk(testFolder.toPath())
-				.filter(p -> plantuml.matches(p))
-				.map(Path::toFile)
-				.toList();
-		File structurizrFile = Files.walk(testFolder.toPath())
-				.filter(p -> structurizr.matches(p))
-				.map(Path::toFile)
-				.findFirst().get();
-
-		List<Object> args = new ArrayList<>();
-		args.add(testFolder);
-		args.add(plantUmlFiles);
-		args.add(structurizrFile);
-		Arguments returned = Arguments.of(args.toArray());
-		return returned;
-	}
 
 	public static boolean pathHasRequiredFiles(Path path) throws IOException {
 		File folder = path.toFile();
@@ -85,6 +67,7 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 		// workspace files
 		try (Stream<Path> stream = Files.list(dirPath)) {
 			List<Arguments> returned = stream
+					.sorted(Path::compareTo)
 					.filter(path -> path.toFile().isDirectory())
 					.filter(StreamUtils.andLogFilteredOutValues(
 							Throwing.predicate(WorkspaceDefinitionProcessorTest::pathHasRequiredFiles), 
@@ -95,12 +78,30 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 					;
 			return returned.stream();
 		}
+	}
+	
+	static private Arguments toArguments(File testFolder) throws IOException {
+		List<File> plantUmlFiles = Files.walk(testFolder.toPath())
+				.filter(p -> plantuml.matches(p))
+				.map(Path::toFile)
+				.toList();
+		File structurizrFile = Files.walk(testFolder.toPath())
+				.filter(p -> structurizr.matches(p))
+				.map(Path::toFile)
+				.findFirst().get();
 
+		List<Object> args = new ArrayList<>();
+		args.add(testFolder.getName());
+		args.add(testFolder);
+		args.add(plantUmlFiles);
+		args.add(structurizrFile);
+		Arguments returned = Arguments.of(args.toArray());
+		return returned;
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{0}")
 	@MethodSource
-	void can_parse_set_of_C4PlantUML_files(File folder, List<File> diagrams, File workspace) throws StructurizrDslParserException, IOException {
+	void can_parse_set_of_C4PlantUML_files(String folderName, File folder, List<File> diagrams, File workspace) throws StructurizrDslParserException, IOException {
 		// Given
 		Workspace expected = StructurizrTestUtils.toWorkspace(workspace);
 		// When
@@ -109,7 +110,8 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 		try {
 			Assertions.assertThat(parsed).usingRecursiveComparison()
 			// I think I can do better than that
-				.ignoringFieldsMatchingRegexes(".*properties|.*interactionStyle|.*tags|.*id|.*idGenerator.*|.*elementsById|.*relationshipsById|.*sourceId|.*destinationId")
+				.ignoringFieldsMatchingRegexes(
+						".*properties|.*interactionStyle|.*tags|.*id|.*idGenerator.*|.*elementsById|.*relationshipsById|.*sourceId|.*destinationId|.*containerId")
 				.isEqualTo(expected);
 		} catch(AssertionError e) {
 			WorkspaceWriter writer = new WorkspaceWriter();

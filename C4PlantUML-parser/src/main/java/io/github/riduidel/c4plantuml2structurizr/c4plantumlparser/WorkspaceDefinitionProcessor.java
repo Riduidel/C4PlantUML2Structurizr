@@ -20,6 +20,7 @@ import io.github.riduidel.c4plantuml2structurizr.Configuration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser.C4PlantUMLParser;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ComponentDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContainerDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
 
@@ -42,13 +43,12 @@ public class WorkspaceDefinitionProcessor {
 		DetectedDiagrams diagrams = detector.detectDiagramsIn(diagramFiles);
 		Workspace returned = parseContext(diagrams.context());
 		diagrams.containers().stream().forEach(Throwing.consumer(file -> parseContainersIn(returned, file)));
-		diagrams.components().stream().forEach(file -> parseComponentsIn(returned, file));
+		diagrams.components().stream().forEach(Throwing.consumer(file -> parseComponentsIn(returned, file)));
 		return returned;
 	}
 
-	private Object parseComponentsIn(Workspace returned, File file) {
-		// TODO Auto-generated method stub
-		return null;
+	private Object parseComponentsIn(Workspace returned, File component) throws IOException {
+		return parseFile(new ComponentDiagram(returned, component));
 	}
 
 	private Object parseContainersIn(Workspace returned, File container) throws IOException {

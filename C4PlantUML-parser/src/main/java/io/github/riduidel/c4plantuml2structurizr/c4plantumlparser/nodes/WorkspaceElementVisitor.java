@@ -2,10 +2,12 @@ package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes;
 
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ComponentBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ComponentDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContainerDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
 
@@ -50,5 +52,13 @@ public interface WorkspaceElementVisitor<Returned> {
 	boolean startVisitContainerBoundary(ContainerBoundaryBuilder containerBoundaryBuilder);
 
 	Returned endVisitContainerBoundary(ContainerBoundaryBuilder containerBoundaryBuilder);
+
+	boolean startVisitComponent(ComponentBuilder componentBuilder);
+
+	Returned endVisitComponent(ComponentBuilder componentBuilder);
+
+	boolean startVisitComponentDiagram(ComponentDiagram componentDiagram);
+
+	Returned endVisitComponentDiagram(ComponentDiagram componentDiagram);
 
 }
