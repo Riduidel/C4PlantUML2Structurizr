@@ -11,7 +11,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDesc
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
 
-public abstract class BoundaryBuilder<BuilderType extends BoundaryBuilder, BuiltType extends StaticStructureElement> 
+public abstract class AbstractBoundaryBuilder<BuilderType extends AbstractBoundaryBuilder> 
 	extends WorkspaceElementBuilder 
 	implements WithAlias<BuilderType>, WithLabel<BuilderType> {
 

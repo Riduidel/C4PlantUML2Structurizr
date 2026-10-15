@@ -23,8 +23,9 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDesc
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.BoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.AbstractBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.BasicBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ComponentBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
@@ -56,6 +57,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				TestNot("@enduml"),
 				FirstOf(
 					Include(),
+					EnterpriseBoundary(),
 					SystemOrBoundary(),
 					Person(),
 					Relationship(),
@@ -141,6 +143,17 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 							context -> context.getValueStack().push(new ContainerBoundaryBuilder()), 
 							descendants))
 				);
+	}
+	
+	public Rule EnterpriseBoundary() {
+		Rule[] descendants = new Rule[] {
+				SystemOrBoundary()
+			};
+		return Sequence(String("Enterprise_"),
+				ModelElementBoundaryBuilder(
+						context -> context.getValueStack().push(new BasicBoundaryBuilder()), 
+						descendants
+						));
 	}
 	
 	public Rule Component() {

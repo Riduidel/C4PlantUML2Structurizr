@@ -1,11 +1,14 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.structurizr.PropertyHolder;
 import com.structurizr.Workspace;
 import com.structurizr.model.Component;
 import com.structurizr.model.Container;
@@ -22,6 +25,8 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantU
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementAdapter;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.AbstractBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.BasicBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ComponentBuilder;
@@ -54,8 +59,16 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	public boolean startVisitPlantUMLBlock(PlantUMLBlock plantUMLBlock) {
 		if(returned==null) {
 			returned = new Workspace(plantUMLBlock.blockName);
+			returned.getModel().addProperty(configuration.groupSeparator, "/");
 		}
+		stack.push(returned.getModel());
 		return true;
+	}
+	
+	@Override
+	public Workspace endVisitPlantUMLBlock(PlantUMLBlock plantUMLBlock) {
+		stack.pop();
+		return super.endVisitPlantUMLBlock(plantUMLBlock);
 	}
 	
 	@Override
@@ -76,6 +89,12 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	private <Type extends StaticStructureElement> void fillModelElement(ModelElementBuilder<?, Type> builder, Type element) {
 		associateAlias(builder, element);
 		element.setDescription(builder.getDescription());
+		if (stack.peek() instanceof PropertyHolder) {
+			PropertyHolder holder = (PropertyHolder) stack.peek();
+			if(holder.getProperties().containsKey(configuration.currentGroupPath)) {
+				element.setGroup(holder.getProperties().get(configuration.currentGroupPath));
+			}
+		}
 	}
 	
 	@Override
@@ -154,7 +173,8 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 
 		if(containingSystem.getContainerWithName(containerBoundaryBuilder.getName())!=null) {
 			stack.push(containingSystem.getContainerWithName(containerBoundaryBuilder.getName()));
-			// TODO implement group that is not linked to a softwaresystem
+		} else {
+			startVisitBoundary(containerBoundaryBuilder);
 		}
 		return true;
 	}
@@ -165,6 +185,8 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 			Container peeked = (Container) stack.peek();
 			if(peeked.getName().equals(containerBoundaryBuilder.getName())) {
 				stack.pop();
+			} else {
+				endVisitBoundary(containerBoundaryBuilder);
 			}
 		}
 		return super.endVisitContainerBoundary(containerBoundaryBuilder);
@@ -274,5 +296,54 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	@Override
 	public Workspace endVisitComponentDiagram(ComponentDiagram componentDiagram) {
 		return endVisitDiagram(componentDiagram);
+	}
+	
+	@Override
+	public boolean startVisitBasicBoundary(BasicBoundaryBuilder basicBoundaryBuilder) {
+		startVisitBoundary(basicBoundaryBuilder);
+		return super.startVisitBasicBoundary(basicBoundaryBuilder);
+	}
+
+	@Override
+	public Workspace endVisitBasicBoundary(BasicBoundaryBuilder basicBoundaryBuilder) {
+		endVisitBoundary(basicBoundaryBuilder);
+		return super.endVisitBasicBoundary(basicBoundaryBuilder);
+	}
+	
+	private void startVisitBoundary(AbstractBoundaryBuilder basicBoundaryBuilder) {
+		if (stack.peek() instanceof PropertyHolder) {
+			PropertyHolder holder = (PropertyHolder) stack.peek();
+			updateCurrentGroupPath(holder, pathFragments -> pathFragments.add(basicBoundaryBuilder.getName()));
+		}
+	}
+
+	private void updateCurrentGroupPath(PropertyHolder holder, Consumer<List<String>> updater) {
+		Map<String, String> properties = StructurizrHack.getModifiablePropertiesOf(holder);
+		String currentPath = properties.getOrDefault(configuration.currentGroupPath, "");
+		List<String> pathFragments = currentPath.isBlank() ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(currentPath.split(configuration.groupSeparator, -1)));
+		updater.accept(pathFragments);
+		if(pathFragments.isEmpty()) {
+			properties.remove(configuration.currentGroupPath);
+		} else {
+			properties.put(
+					configuration.currentGroupPath,
+					pathFragments.stream().collect(Collectors.joining(configuration.groupSeparator)));
+		}
+	}
+
+	private void endVisitBoundary(AbstractBoundaryBuilder basicBoundaryBuilder) {
+		if (stack.peek() instanceof PropertyHolder) {
+			PropertyHolder holder = (PropertyHolder) stack.peek();
+			updateCurrentGroupPath(holder, pathFragments -> {
+				if(basicBoundaryBuilder.getName().equals(pathFragments.getLast())) {
+					pathFragments.removeLast();
+				} else {
+					throw new UnsupportedOperationException(
+							String.format("We tried to remove last group path %s from %s, it didn't end well.",
+									basicBoundaryBuilder.getName(),
+									pathFragments));
+				}
+			});
+		}
 	}
 }

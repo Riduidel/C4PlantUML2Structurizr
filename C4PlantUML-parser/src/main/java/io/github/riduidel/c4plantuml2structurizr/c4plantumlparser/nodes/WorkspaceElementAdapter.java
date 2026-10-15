@@ -1,5 +1,8 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes;
 
+import com.structurizr.Workspace;
+
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.BasicBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ComponentBuilder;
@@ -125,6 +128,16 @@ public abstract class WorkspaceElementAdapter<Returned> implements WorkspaceElem
 	
 	@Override
 	public Returned endVisitContainerDiagram(ContainerDiagram containerDiagram) {
+		return returned;
+	}
+
+	@Override
+	public boolean startVisitBasicBoundary(BasicBoundaryBuilder basicBoundaryBuilder) {
+		return true;
+	}
+
+	@Override
+	public Returned endVisitBasicBoundary(BasicBoundaryBuilder basicBoundaryBuilder) {
 		return returned;
 	}
 }
