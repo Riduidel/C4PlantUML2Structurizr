@@ -116,43 +116,34 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 	}
 	
 	public Rule SystemOrBoundary() {
-		Rule[] descendants = new Rule[] {
-			ContainerOrBoundary()
-		};
 		return Sequence("System",
 				Optional('_'),
 				FirstOf(ModelElementBuilder(
 							context -> context.getValueStack().push(new SystemBuilder()), 
-							descendants),
+							ContainerOrBoundary()),
 						ModelElementBoundaryBuilder(
 							context -> context.getValueStack().push(new SystemBoundaryBuilder()), 
-							descendants))
+							ContainerOrBoundary(), SystemOrBoundary()))
 				);
 	}
 	
 	public Rule ContainerOrBoundary() {
-		Rule[] descendants = new Rule[] {
-			Component()
-		};
 		return Sequence("Container",
 				Optional('_'),
 				FirstOf(ModelElementBuilder(
 							context -> context.getValueStack().push(new ContainerBuilder()), 
-							descendants), 
+							Component()), 
 						ModelElementBoundaryBuilder(
 							context -> context.getValueStack().push(new ContainerBoundaryBuilder()), 
-							descendants))
+							Component(), ContainerOrBoundary()))
 				);
 	}
 	
 	public Rule EnterpriseBoundary() {
-		Rule[] descendants = new Rule[] {
-				SystemOrBoundary()
-			};
 		return Sequence(String("Enterprise_"),
 				ModelElementBoundaryBuilder(
 						context -> context.getValueStack().push(new BasicBoundaryBuilder()), 
-						descendants
+						SystemOrBoundary()
 						));
 	}
 	

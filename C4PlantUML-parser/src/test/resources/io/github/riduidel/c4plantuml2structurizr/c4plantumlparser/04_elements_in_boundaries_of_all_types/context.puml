@@ -3,7 +3,9 @@
 
 Person(personAlias, "A person", "This is a person")
 Enterprise_Boundary(company, "Company boundary") {
-	System(systemAlias, "A system", "This is a system")
+	System_Boundary(domain, "Domain boundary") {
+		System(systemAlias, "A system", "This is a system")
+	}
 }
 
 Rel(personAlias, systemAlias, "A relationship between person and system", "This is person to system technology")

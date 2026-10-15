@@ -1,10 +1,15 @@
 workspace "C4_Elements" "" {
 	model {
+		properties {
+			"structurizr.groupSeparator" "/"
+		}
 		personAlias = Person "A person" "This is a person"
 		group "Company boundary" {
-			systemAlias = softwareSystem "A system" "This is a system" {
-				containerAlias = container "A container" "This is a container" {
-					componentAlias = component "A component" "This is a component"
+			group "Domain boundary" {
+				systemAlias = softwareSystem "A system" "This is a system" {
+					containerAlias = container "A container" "This is a container" {
+						componentAlias = component "A component" "This is a component"
+					}
 				}
 			}
 		}

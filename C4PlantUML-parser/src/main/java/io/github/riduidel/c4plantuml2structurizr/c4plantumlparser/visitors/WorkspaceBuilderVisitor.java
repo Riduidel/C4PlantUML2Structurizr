@@ -134,6 +134,8 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBoundaryBuilder.getName())!=null) {
 			stack.push(returned.getModel().getSoftwareSystemWithName(softwareSystemBoundaryBuilder.getName()));
 			// TODO implement group that is not linked to a softwaresystem
+		} else {
+			startVisitBoundary(softwareSystemBoundaryBuilder);
 		}
 		return true;
 	}
@@ -145,6 +147,8 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 			if(peeked.getName().equals(softwareSystemBoundaryBuilder.getName())) {
 				stack.pop();
 			}
+		} else {
+			endVisitBoundary(softwareSystemBoundaryBuilder);
 		}
 		return super.endVisitSystemBoundary(softwareSystemBoundaryBuilder);
 	}
@@ -318,16 +322,19 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	}
 
 	private void updateCurrentGroupPath(PropertyHolder holder, Consumer<List<String>> updater) {
+		String separator = returned.getModel().getProperties().get(configuration.groupSeparator);
 		Map<String, String> properties = StructurizrHack.getModifiablePropertiesOf(holder);
 		String currentPath = properties.getOrDefault(configuration.currentGroupPath, "");
-		List<String> pathFragments = currentPath.isBlank() ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(currentPath.split(configuration.groupSeparator, -1)));
+		List<String> pathFragments = currentPath.isBlank() 
+				? new ArrayList<String>() 
+				: new ArrayList<String>(Arrays.asList(currentPath.split(separator, -1)));
 		updater.accept(pathFragments);
 		if(pathFragments.isEmpty()) {
 			properties.remove(configuration.currentGroupPath);
 		} else {
 			properties.put(
 					configuration.currentGroupPath,
-					pathFragments.stream().collect(Collectors.joining(configuration.groupSeparator)));
+					pathFragments.stream().collect(Collectors.joining(separator)));
 		}
 	}
 
