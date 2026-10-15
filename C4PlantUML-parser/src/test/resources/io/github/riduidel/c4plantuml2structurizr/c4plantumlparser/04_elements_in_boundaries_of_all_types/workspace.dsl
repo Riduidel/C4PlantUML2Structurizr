@@ -7,8 +7,10 @@ workspace "C4_Elements" "" {
 		group "Company boundary" {
 			group "Domain boundary" {
 				systemAlias = softwareSystem "A system" "This is a system" {
-					containerAlias = container "A container" "This is a container" {
-						componentAlias = component "A component" "This is a component"
+					group "Container boundary" {
+						containerAlias = container "A container" "This is a container" {
+							componentAlias = component "A component" "This is a component"
+						}
 					}
 				}
 			}

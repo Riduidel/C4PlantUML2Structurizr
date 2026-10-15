@@ -33,8 +33,15 @@ public class StructurizrHack {
 	}
 
 	public static Map<String, String> getModifiablePropertiesOf(PropertyHolder holder) {
+		return switch(holder) {
+			case ModelItem m -> buildPropertiesMapProxyFor(ModelItem.class, m);
+			default -> buildPropertiesMapProxyFor(holder.getClass(), holder);
+		}; 
+	}
+
+	private static Map<String, String> buildPropertiesMapProxyFor(Class<? extends PropertyHolder> holderClass, PropertyHolder holder) {
 		try {
-			return new ModifiableMapProxMaker(holder.getClass()).proxify(holder);
+			return new ModifiableMapProxMaker(holderClass).proxify(holder);
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| NoSuchFieldException e) {
 			throw new RuntimeException(String.format("Could not build a proxy for %s", holder), e);
