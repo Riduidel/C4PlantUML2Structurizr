@@ -230,7 +230,7 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 				}
 			}
 		}
-		failIfBadlyDeclared(Map.of("source", source, "target", target));
+		failIfBadlyDeclared(relationshipBuilder, Map.of("source", source, "target", target));
 		// ok, source and target have only one elements, so create the relationship
 		Relationship built = new StructurizrHack().addRelationship(model, source.get(0), target.get(0), relationshipBuilder.getDescription(), relationshipBuilder.getTechnology(), InteractionStyle.Synchronous, new String[0]);
 		stack.push(built);
@@ -243,12 +243,13 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 		return super.endVisitRelationship(relationshipBuilder);
 	}
 
-	private void failIfBadlyDeclared(Map<String, List<Element>> of) {
+	private void failIfBadlyDeclared(RelationshipBuilder relationshipBuilder, Map<String, List<Element>> of) {
 		String message = of.entrySet().stream()
 			.filter(e -> e.getValue().size()!=1)
-			.map(e -> String.format("%s end of %s is badly declared, since %d model elements match\n", 
+			.map(e -> String.format("%s end of\n%s -> %s \"%s\"\nis badly declared, since %d elements matched:\n", 
 					e.getKey(),
-					this,
+					relationshipBuilder.getSourceAlias(), relationshipBuilder.getTargetAlias(), relationshipBuilder.getDescription(),
+					e.getValue().size(),
 					e.getValue().stream()
 						.map(element -> element.toString())
 						.map(element -> "* "+element)
