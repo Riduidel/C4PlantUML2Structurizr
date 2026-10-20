@@ -1,19 +1,18 @@
 package io.github.riduidel.c4plantuml2structurizr.writer;
 
 import java.beans.Introspector;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.structurizr.PropertyHolder;
 import com.structurizr.Workspace;
@@ -25,6 +24,10 @@ import com.structurizr.model.ModelItem;
 import com.structurizr.model.Person;
 import com.structurizr.model.Relationship;
 import com.structurizr.model.SoftwareSystem;
+import com.structurizr.view.ComponentView;
+import com.structurizr.view.ContainerView;
+import com.structurizr.view.StaticView;
+import com.structurizr.view.SystemContextView;
 import com.structurizr.view.ViewSet;
 
 import io.github.riduidel.structurizr.visitor.FullVisitorAdapter;
@@ -39,7 +42,8 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	public String write(Workspace workspace) {
 		GroupAwareWorkspaceVisitor visitor = new GroupAwareWorkspaceVisitor(this);
 		visitor.visit(workspace);
-		return fullString;
+		// Finally, remove all empty lines
+		return fullString.replace("\n\n", "\n");
 	}
 
 	private void startVisitElement() {
@@ -79,17 +83,30 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	
 	@Override
 	public void endVisit(Workspace workspace) {
-		endVisitElement(
+		writeElementInFragments(
 				true,
 				new StringBuilder().append("workspace \"").append(workspace.getName()).append("\""), writeProperties(workspace)
 				);
 		super.endVisit(workspace);
 	}
-	private void endVisitElement(boolean force, StringBuilder declarationLine, StringBuilder...localTags) {
-		endVisitElement(force, declarationLine, Arrays.asList(localTags), Arrays.asList());
+	/**
+	 * Write current element in parent level fragments
+	 * @param force when set to true, the "{...}" pair is always written
+	 * @param declarationLine declaration line of the element
+	 * @param localTags local tags to write before writing children
+	 */
+	private void writeElementInFragments(boolean force, StringBuilder declarationLine, StringBuilder...localTags) {
+		writeElementInFragments(force, declarationLine, Arrays.asList(localTags), Arrays.asList());
 	}
 
-	private void endVisitElement(boolean force, 
+	/**
+	 * Write the element in parent level fragments, for continuous accumulation
+	 * @param force when set to true, the "{...}" pair is always written
+	 * @param declarationLine declaration line of the element
+	 * @param prefixLines lines to write BEFORE writing current {@link #fragments} lines
+	 * @param suffixLines lines to write AFTER writing current {@link #fragments} lines
+	 */
+	private void writeElementInFragments(boolean force, 
 			StringBuilder declarationLine, 
 			List<StringBuilder> prefixLines,
 			List<StringBuilder> suffixLines) {
@@ -128,7 +145,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		for(Relationship r : model.getRelationships()) {
 			writeRelationship(r);
 		}
-		endVisitElement(
+		writeElementInFragments(
 				true,
 				new StringBuilder("model"), 
 				writeProperties(model)
@@ -137,12 +154,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	}
 
 	private StringBuilder writeUrl(ModelItem element) {
-		StringBuilder returned = new StringBuilder();
-		if(element.getUrl()!=null && !element.getUrl().isBlank()) {
-			returned.append(prefix)
-				.append("url \"").append(element.getUrl()).append("\"\n");
-		}
-		return returned;
+		return writeNonNull("url", element.getUrl());
 	}
 	private StringBuilder writePerspectives(ModelItem element) {
 		StringBuilder returned = new StringBuilder();
@@ -155,10 +167,23 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	}
 
 	private StringBuilder writeDescription(Element element) {
+		String description = element.getDescription();
+		return writeDescription(description);
+	}
+
+	private StringBuilder writeDescription(String description) {
+		return writeNonNull("description", description);
+	}
+
+	private StringBuilder writeTechnology(String description) {
+		return writeNonNull("technology", description);
+	}
+
+	private StringBuilder writeNonNull(String tag, String value) {
 		StringBuilder returned = new StringBuilder();
-		if(element.getDescription()!=null && !element.getDescription().isBlank()) {
+		if(value!=null && !value.isBlank()) {
 			returned.append(prefix)
-				.append("description \"").append(element.getDescription()).append("\"\n");
+				.append(tag).append(" \"").append(StringEscapeUtils.escapeJava(value)).append("\"\n");
 		}
 		return returned;
 	}
@@ -183,21 +208,31 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		// Structurizr adds to normal tags the element class name (and the "element" tag)
 		Set<String> tagsSet = new LinkedHashSet<>(element.getTagsAsSet());
 		tagsSet.removeAll(element.getDefaultTags());
-		if(!tagsSet.isEmpty()) {
-			String tags = tagsSet.stream().collect(Collectors.joining(","));
-			returned.append(prefix)
-				.append("tags \"").append(tags).append("\"\n");
-		}
+		String tags = tagsSet.stream().collect(Collectors.joining(","));
+		returned.append(writeNonNull("tags", tags));
 		return returned;
 	}
 	
-	private void endVisitModelElement(Element person) {
-		endVisitElement(false,
-				writeDeclaration(person),
-				writeProperties(person),
-				writeDescription(person),
-				writeUrl(person), 
-				writeTags(person));
+	private void writeElementInFragments(Element element) {
+		List<StringBuilder> elementParametersList = buildModelElementParameters(element);
+		writeElementInFragments(element, elementParametersList);
+	}
+
+	private List<StringBuilder> buildModelElementParameters(Element element) {
+		List<StringBuilder> elementParametersList = new ArrayList<StringBuilder>(Arrays.asList(
+			writeProperties(element),
+			writeDescription(element),
+			writeUrl(element), 
+			writeTags(element)
+		));
+		return elementParametersList;
+	}
+
+	private void writeElementInFragments(Element element, List<StringBuilder> elementParametersList) {
+		StringBuilder[] elementParameters = elementParametersList.toArray(new StringBuilder[elementParametersList.size()]);
+		writeElementInFragments(false,
+				writeDeclaration(element),
+				elementParameters);
 	}
 
 	@Override
@@ -207,7 +242,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	}
 	@Override
 	public void endVisitPerson(Person person) {
-		endVisitModelElement(person);
+		writeElementInFragments(person);
 		super.endVisitPerson(person);
 	}
 	
@@ -219,7 +254,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	
 	@Override
 	public void endVisitSoftwareSystem(SoftwareSystem system) {
-		endVisitModelElement(system);
+		writeElementInFragments(system);
 		super.endVisitSoftwareSystem(system);
 	}
 	
@@ -231,7 +266,9 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	
 	@Override
 	public void endVisitContainer(Container container) {
-		endVisitModelElement(container);
+		List<StringBuilder> elementParameters = buildModelElementParameters(container);
+		elementParameters.add(writeTechnology(container.getTechnology()));
+		writeElementInFragments(container, elementParameters);
 		super.endVisitContainer(container);
 	}
 	
@@ -243,7 +280,9 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	
 	@Override
 	public void endVisitComponent(Component component) {
-		endVisitModelElement(component);
+		List<StringBuilder> elementParameters = buildModelElementParameters(component);
+		elementParameters.add(writeTechnology(component.getTechnology()));
+		writeElementInFragments(component, elementParameters);
 		super.endVisitComponent(component);
 	}
 	
@@ -255,7 +294,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	
 	@Override
 	public void endVisitViewList(ViewSet views) {
-		endVisitElement(true, new StringBuilder().append("views"));
+		writeElementInFragments(true, new StringBuilder().append("views"));
 		super.endVisitViewList(views);
 	}
 
@@ -274,7 +313,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 
 	@Override
 	public void endVisitGroup(List<String> nextPath) {
-		endVisitElement(false,
+		writeElementInFragments(false,
 				new StringBuilder("group")
 					.append(" \"").append(nextPath.getLast()) .append("\"")
 				);
@@ -292,7 +331,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 			.stream()
 			.dropWhile(s -> s==null || s.isBlank())
 			.map(s -> "\""+s+"\"")
-			.toList();
+			.collect(Collectors.toCollection(() -> new ArrayList<>()));
 		Collections.reverse(elements);
 		if(!elements.isEmpty()) {
 			declarationLine.append(" ");
@@ -300,11 +339,69 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		declarationLine.append(elements.stream()
 			.collect(Collectors.joining(" ")));
 		
-		endVisitElement(false, 
+		writeElementInFragments(false, 
 				declarationLine,
 				writeTags(relationship),
 				writeUrl(relationship),
 				writeProperties(relationship),
 				writePerspectives(relationship));
+	}
+	
+	@Override
+	public boolean startVisitContextView(SystemContextView v) {
+		startVisitElement();
+		return super.startVisitContextView(v);
+	}
+	
+	@Override
+	public void endVisitContextView(SystemContextView v) {
+		writeStaticView(v,
+				new StringBuilder().append("systemContext")
+					.append(" ").append(getVariableName(v.getSoftwareSystem()).orElseThrow(
+							() -> new RuntimeException(String.format("Unable to write view %s refering to variable-less software system %s", 
+									v.getKey(),
+									v.getSoftwareSystem()))))
+					.append(" ").append(v.getKey()));
+	}
+	
+	@Override
+	public boolean startVisitContainerView(ContainerView v) {
+		startVisitElement();
+		return super.startVisitContainerView(v);
+	}
+	
+	@Override
+	public void endVisitContainerView(ContainerView v) {
+		writeStaticView(v,
+				new StringBuilder().append("container")
+					.append(" ").append(getVariableName(v.getSoftwareSystem()).orElseThrow(
+							() -> new RuntimeException(String.format("Unable to write view %s refering to variable-less software system %s", 
+									v.getKey(),
+									v.getSoftwareSystem()))))
+					.append(" ").append(v.getKey()));
+	}
+	
+	@Override
+	public boolean startVisitComponentView(ComponentView v) {
+		startVisitElement();
+		return super.startVisitComponentView(v);
+	}
+	
+	@Override
+	public void endVisitComponentView(ComponentView v) {
+		writeStaticView(v,
+				new StringBuilder().append("component")
+					.append(" ").append(getVariableName(v.getContainer()).orElseThrow(
+							() -> new RuntimeException(String.format("Unable to write view %s refering to variable-less container %s", 
+									v.getKey(),
+									v.getContainer()))))
+					.append(" ").append(v.getKey()));
+	}
+
+	private void writeStaticView(StaticView staticView, StringBuilder declarationLine) {
+		writeElementInFragments(true, 
+				declarationLine,
+				writeProperties(staticView),
+				writeDescription(staticView.getDescription()));
 	}
 }

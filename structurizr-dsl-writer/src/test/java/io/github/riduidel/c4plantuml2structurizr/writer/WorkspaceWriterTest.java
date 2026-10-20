@@ -38,16 +38,17 @@ class WorkspaceWriterTest {
 					.filter(StreamUtils.andLogFilteredOutValues(
 							path -> matcher.matches(path), 
 							p -> logger.info("REFUSED "+p)))
-            		.map(path -> Arguments.of(path.toFile()))
+					.sorted(Path::compareTo)
+            		.map(path -> Arguments.of(path.toFile().getName(), path.toFile()))
             		.toList()
             		.stream();
         }
 	}
 
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{0}")
 	@MethodSource
-	void can_write_a_dsl_file(File source) throws IOException, StructurizrDslParserException {
+	void can_write_a_dsl_file(String path, File source) throws IOException, StructurizrDslParserException {
 		// Given
 		Workspace workspace = StructurizrTestUtils.toWorkspace(source);
 		workspace.removeProperty("structurizr.dsl");

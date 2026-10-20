@@ -1,0 +1,11 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(personAlias, "A person", "This is a person")
+System_Boundary(systemDBAlias, "A DB system") {
+	ContainerQueue(containerAlias, "A Queue container", "Container queue technology", "This is a queue container")
+	ContainerDb_Ext(containerExtAlias, "A DB container", "Container DB technology", "This is a DB container")
+}
+
+Rel(personAlias, containerAlias, "A relationship between person and container", "This is person to container technology")
+@enduml
