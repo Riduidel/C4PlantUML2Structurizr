@@ -90,6 +90,8 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	private <Type extends StaticStructureElement> void fillModelElement(ModelElementBuilder<?, Type> builder, Type element) {
 		associateAlias(builder, element);
 		element.setDescription(builder.getDescription());
+		element.setUrl(builder.getLink());
+		element.addTags(builder.getTags().split(configuration.tagSeparator));
 		if (stack.peek() instanceof PropertyHolder) {
 			PropertyHolder holder = (PropertyHolder) stack.peek();
 			if(holder.getProperties().containsKey(configuration.currentGroupPath)) {
@@ -119,6 +121,7 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getLabel())==null) {
 			SoftwareSystem software = returned.getModel().addSoftwareSystem(softwareSystemBuilder.getLabel(), softwareSystemBuilder.getDescription());
 			fillModelElement(softwareSystemBuilder, software);
+			software.addTags(softwareSystemBuilder.getType());
 		}
 		stack.push(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getLabel()));
 		return true;
@@ -161,6 +164,7 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 			Container created = containingSystem.addContainer(containerBuilder.getLabel());
 			fillModelElement(containerBuilder, created);
 			created.setTechnology(containerBuilder.getTechnology());
+			created.addTags(containerBuilder.getType());
 		}
 		stack.push(containingSystem.getContainerWithName(containerBuilder.getLabel()));
 		return true;

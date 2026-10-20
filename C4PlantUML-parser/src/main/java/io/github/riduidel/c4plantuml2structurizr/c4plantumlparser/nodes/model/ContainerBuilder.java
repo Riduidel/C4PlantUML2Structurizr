@@ -38,7 +38,7 @@ public class ContainerBuilder extends ModelElementBuilder<ContainerBuilder, Cont
 		return this;
 	}
 
-	protected String getType() {
+	public String getType() {
 		return type;
 	}
 

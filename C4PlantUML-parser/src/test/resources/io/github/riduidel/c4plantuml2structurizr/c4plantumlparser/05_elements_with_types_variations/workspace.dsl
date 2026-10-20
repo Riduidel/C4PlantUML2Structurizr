@@ -12,7 +12,7 @@ workspace "C4_Elements" "" {
 				technology "Container DB technology"
 			}
 		}
-		systemQueueAlias = softwareSystem "An external queue system" "This is a system"
+		systemQueueAlias = softwareSystem "An external queue system"
 		personAlias -> systemDBAlias "A relationship between person and system" "This is person to system technology"
 		personAlias -> containerAlias "A relationship between person and container" "This is person to container technology"
 		personAlias -> componentAlias "A relationship between person and component" "This is person to component technology"

@@ -19,6 +19,9 @@ public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilde
 		WithTags<BuilderType>,
 		WithLink<BuilderType> {
 
+	/**
+	 * Name of the variable used to reference this element in model
+	 */
 	private String alias = "";
 	private String name = "";
 	private String description = "";

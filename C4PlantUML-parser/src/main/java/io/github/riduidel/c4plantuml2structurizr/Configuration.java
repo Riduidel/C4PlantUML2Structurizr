@@ -15,4 +15,8 @@ public class Configuration {
 	 * usually don't write that one ;-)
 	 */
 	public String currentGroupPath = "structurizr.dsl.current.group.path";
+	/**
+	 * Regexp used to split tags
+	 */
+	public String tagSeparator = ",";
 }

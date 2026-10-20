@@ -3,7 +3,7 @@
 
 Person_Ext(personAlias, "A person", "This is a person")
 SystemDb(systemDBAlias, "A DB system", "This is a system")
-SystemQueue_Ext(systemQueueAlias, "An external queue system", "This is a system")
+SystemQueue_Ext(systemQueueAlias, "An external queue system")
 
 Rel(personAlias, systemDBAlias, "A relationship between person and system", "This is person to system technology")
 @enduml

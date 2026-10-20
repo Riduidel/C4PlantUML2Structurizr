@@ -3,8 +3,11 @@ workspace "C4_Elements" "" {
 		properties {
 			"structurizr.groupSeparator" "/"
 		}
-		personAlias = Person "A person" "This is a person"
+		personAlias = Person "A person" "This is a person" {
+			url https://microformats.org/wiki/microformats2#person_example
+		}
 		systemAlias = softwareSystem "A system" "This is a system" {
+			url https://docs.structurizr.com/dsl/language#softwaresystem
 			containerAlias = container "A container" "This is a container" {
 				technology "Container technology"
 				componentAlias = component "A component" "This is a component" {
