@@ -2,6 +2,7 @@ package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -43,6 +44,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.Sy
  */
 @BuildParseTree
 public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
+	private static final Logger logger = Logger.getLogger(C4PlantUMLParser.class.getName());
 
 	public Rule diagram() {
 		return Sequence(
@@ -149,7 +151,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 					ModelElementBoundaryBuilder(
 						String("System_Boundary"),
 						context -> context.getValueStack().push(new SystemBoundaryBuilder()), 
-						ContainerOrBoundary()))
+						SystemOrBoundary(), ContainerOrBoundary()))
 				);
 	}
 	
@@ -239,13 +241,12 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				AliasDeclaration(),
 				LabelDeclaration(),
 				ZeroOrMore(
-						TypeDeclaration(),
-										TagsDeclaration(),
-										ZeroOrMore(
-												LinkDeclaration(),
-												ZeroOrMore(
-														DescriptionDeclaration(),
-														ZeroOrMore(ShapeDeclaration())))
+						TagsDeclaration(),
+						ZeroOrMore(
+								LinkDeclaration(),
+								ZeroOrMore(
+										DescriptionDeclaration(),
+										ZeroOrMore(ShapeDeclaration())))
 						),
 				Ch(')'),
 				SubBlock(descendants),

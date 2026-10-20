@@ -6,10 +6,10 @@ workspace "C4_Elements" "" {
 		personAlias = Person "A person" "This is a person"
 		group "Company boundary" {
 			group "Domain boundary" {
-				systemAlias = softwareSystem "A system" "This is a system" {
+				systemAlias = softwareSystem "A system" "{
 					group "Container boundary" {
-						containerAlias = container "A container" "This is a container" {
-							componentAlias = component "A component" "This is a component"
+						containerAlias = container "A container" {
+							componentAlias = component "A component"
 						}
 					}
 				}

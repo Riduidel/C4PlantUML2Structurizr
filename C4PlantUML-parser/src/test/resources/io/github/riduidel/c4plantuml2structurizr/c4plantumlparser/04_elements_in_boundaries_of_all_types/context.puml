@@ -3,8 +3,8 @@
 
 Person(personAlias, "A person", "This is a person")
 Enterprise_Boundary(company, "Company boundary") {
-	System_Boundary(domain, "Domain boundary") {
-		System(systemAlias, "A system", "This is a system")
+	System_Boundary(domainBoundary, "Domain boundary") {
+		System(systemAlias, "A system")
 	}
 }
 

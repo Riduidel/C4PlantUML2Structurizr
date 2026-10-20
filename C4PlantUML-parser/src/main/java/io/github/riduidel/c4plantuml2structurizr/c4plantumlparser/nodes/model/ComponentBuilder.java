@@ -12,7 +12,7 @@ public class ComponentBuilder extends ModelElementBuilder<ComponentBuilder, Comp
 	WithShape<ComponentBuilder> {
 
 	private String technology = "";
-	private String shape;
+	private String shape = "";
 
 	@Override
 	protected boolean startVisit(WorkspaceElementVisitor visitor) {

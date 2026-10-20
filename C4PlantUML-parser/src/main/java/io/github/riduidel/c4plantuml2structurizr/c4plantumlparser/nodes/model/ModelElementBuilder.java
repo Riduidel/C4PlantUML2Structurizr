@@ -19,12 +19,12 @@ public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilde
 		WithTags<BuilderType>,
 		WithLink<BuilderType> {
 
-	private String alias;
-	private String name;
-	private String description;
-	private String sprite;
-	private String tags;
-	private String link;
+	private String alias = "";
+	private String name = "";
+	private String description = "";
+	private String sprite = "";
+	private String tags = "";
+	private String link = "";
 
 	public void setAlias(String match) {
 		this.alias = match;

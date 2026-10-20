@@ -12,7 +12,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Workspac
 public class PersonBuilder extends ModelElementBuilder<PersonBuilder, Person>
 	implements WithType<PersonBuilder>{
 
-	private String type;
+	private String type = "";
 
 	@Override
 	protected boolean startVisit(WorkspaceElementVisitor visitor) {

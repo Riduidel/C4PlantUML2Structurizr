@@ -24,8 +24,8 @@ public class RelationshipBuilder
 	implements WithDescription<RelationshipBuilder>, WithTechnology<RelationshipBuilder> {
 	private String sourceAlias;
 	private String targetAlias;
-	private String description;
-	private String technology;
+	private String description = "";
+	private String technology = "";
 
 	@Override
 	public String toString() {

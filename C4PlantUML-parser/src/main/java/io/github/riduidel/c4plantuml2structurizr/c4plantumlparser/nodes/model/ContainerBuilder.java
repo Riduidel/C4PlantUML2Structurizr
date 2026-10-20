@@ -11,7 +11,7 @@ public class ContainerBuilder extends ModelElementBuilder<ContainerBuilder, Cont
 	WithTechnology<ContainerBuilder>,
 	WithType<ContainerBuilder> {
 	private String technology = "";
-	private String type;
+	private String type = "";
 
 	@Override
 	protected boolean startVisit(WorkspaceElementVisitor visitor) {

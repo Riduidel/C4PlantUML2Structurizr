@@ -9,8 +9,8 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Workspac
 public class SystemBuilder extends ModelElementBuilder<SystemBuilder, SoftwareSystem>
 	implements WithType<SystemBuilder>, WithShape<SystemBuilder> {
 
-	private String type;
-	private String shape;
+	private String type = "";
+	private String shape = "";
 
 	public String getType() {
 		return type;
