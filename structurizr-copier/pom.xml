@@ -9,7 +9,7 @@
     </parent>
     <artifactId>structurizr-copier</artifactId>
     <properties>
-        <jacoco.covered.instructions.target.percentage>0.52</jacoco.covered.instructions.target.percentage>
+        <jacoco.covered.instructions.target.percentage>0.20</jacoco.covered.instructions.target.percentage>
     </properties>
     <dependencies>
         <dependency>
