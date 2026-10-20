@@ -26,16 +26,6 @@
                 <artifactId>throwing-lambdas</artifactId>
                 <version>0.5.0</version>
             </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.20.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>1.15.0</version>
-        </dependency>
             <dependency>
                 <groupId>com.structurizr</groupId>
                 <artifactId>structurizr-core</artifactId>
@@ -46,6 +36,16 @@
                 <groupId>com.structurizr</groupId>
                 <artifactId>structurizr-dsl</artifactId>
                 <version>6.2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.20.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>1.15.0</version>
             </dependency>
             <dependency>
                 <groupId>org.parboiled</groupId>

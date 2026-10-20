@@ -3,10 +3,15 @@ package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model;
 import com.structurizr.model.Container;
 
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithType;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
 
-public class ContainerBuilder extends ModelElementBuilder<ContainerBuilder, Container> implements WithTechnology<ContainerBuilder> {
+public class ContainerBuilder extends ModelElementBuilder<ContainerBuilder, Container> 
+	implements 
+	WithTechnology<ContainerBuilder>,
+	WithType<ContainerBuilder> {
 	private String technology = "";
+	private String type;
 
 	@Override
 	protected boolean startVisit(WorkspaceElementVisitor visitor) {
@@ -21,14 +26,20 @@ public class ContainerBuilder extends ModelElementBuilder<ContainerBuilder, Cont
 	public String getTechnology() {
 		return technology;
 	}
-
-	public void setTechnology(String technology) {
-		this.technology = technology;
-	}
 	
 	public ContainerBuilder withTechnology(String technology) {
-		setTechnology(technology);
+		this.technology = technology;
 		return this;
+	}
+	
+	@Override
+	public ContainerBuilder withType(String type) {
+		this.type = type;
+		return this;
+	}
+
+	protected String getType() {
+		return type;
 	}
 
 }

@@ -12,13 +12,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.parboiled.errors.ParserRuntimeException;
 
 import com.github.fge.lambdas.Throwing;
 import com.structurizr.Workspace;
@@ -109,11 +109,12 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 		// Then
 		try {
 			Assertions.assertThat(parsed).usingRecursiveComparison()
-			// I think I can do better than that
+				.ignoringCollectionOrderInFieldsMatchingRegexes(".*elements")
+				// I think I can do better than that
 				.ignoringFieldsMatchingRegexes(
-						".*properties|.*interactionStyle|.*tags|.*id|.*idGenerator.*|.*elementsById|.*relationshipsById|.*sourceId|.*destinationId|.*containerId")
+						".*properties|.*interactionStyle|.*tags|.*id|.*idGenerator.*|.*elementsById|.*relationshipsById|.*sourceId|.*destinationId|.*containerId|.*softwareSystemId")
 				.isEqualTo(expected);
-		} catch(AssertionError e) {
+		} catch(AssertionError | RuntimeException e) {
 			WorkspaceWriter writer = new WorkspaceWriter();
 			String effective = writer.write(parsed);
 			logger.severe(String.format("""

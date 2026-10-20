@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.parboiled.Parboiled;
 import org.parboiled.errors.ErrorUtils;
+import org.parboiled.errors.ParserRuntimeException;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.DefaultValueStack;
 import org.parboiled.support.ParsingResult;
@@ -67,20 +68,24 @@ public class WorkspaceDefinitionProcessor {
 
 	private Workspace parseFile(C4PlantUMLDiagram root) throws IOException {
 		File diagramFile = root.source;
-		logger.info("Parsing file "+diagramFile.getAbsolutePath());
-		String fileContent = Files.readString(diagramFile.toPath());
-		ParsingResult<WorkspaceElementBuilder> result = new ReportingParseRunner(parser.diagram())
-				.withValueStack(new DefaultValueStack<WorkspaceElementBuilder>(Arrays.asList(root)))
-				.run(fileContent);
-        if (result.hasErrors()) {
-        	throw new RuntimeException(String.format("File %s has parsing errrors\n%s",
-        			diagramFile,
-        			ErrorUtils.printParseErrors(result.parseErrors)));
-        }
-        if(result.parseTreeRoot.getValue()==root) {
-        	return root.build(configuration);
-        } else {
-        	throw new RuntimeException(String.format("Parsing of file %s returned incorrect result (we do not have the same C4PlantUMLDiagram returned, but %s)", diagramFile, result.parseTreeRoot.getValue()));
-        }
+		try {
+			logger.info("Parsing file "+diagramFile.getAbsolutePath());
+			String fileContent = Files.readString(diagramFile.toPath());
+			ParsingResult<WorkspaceElementBuilder> result = new ReportingParseRunner(parser.diagram())
+					.withValueStack(new DefaultValueStack<WorkspaceElementBuilder>(Arrays.asList(root)))
+					.run(fileContent);
+	        if (result.hasErrors()) {
+	        	throw new RuntimeException(String.format("File %s has parsing errrors\n%s",
+	        			diagramFile,
+	        			ErrorUtils.printParseErrors(result.parseErrors)));
+	        }
+	        if(result.parseTreeRoot.getValue()==root) {
+	        	return root.build(configuration);
+	        } else {
+	        	throw new RuntimeException(String.format("Parsing of file %s returned incorrect result (we do not have the same C4PlantUMLDiagram returned, but %s)", diagramFile, result.parseTreeRoot.getValue()));
+	        }
+		} catch(ParserRuntimeException e) {
+			throw new RuntimeException(String.format("Unable to parse %s", diagramFile), e);
+		}
 	}
 }

@@ -2,7 +2,6 @@ package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -21,11 +20,15 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUML
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithAlias;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLink;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithShape;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithSprite;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTags;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithType;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.AbstractBoundaryBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.BasicBoundaryBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ComponentBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.ContainerBuilder;
@@ -105,7 +108,14 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				AliasDeclaration(),
 				LabelDeclaration(),
 				ZeroOrMore(
-					DescriptionDeclaration()
+					DescriptionDeclaration(),
+					ZeroOrMore(SpriteDeclaration(),
+							ZeroOrMore(
+									TagsDeclaration(),
+									ZeroOrMore(
+											LinkDeclaration(),
+											ZeroOrMore(
+													TypeDeclaration()))))
 					),
 				Ch(')'),
 				Whitespace(),
@@ -116,76 +126,132 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 	}
 	
 	public Rule SystemOrBoundary() {
-		return Sequence("System",
-				Optional('_'),
-				FirstOf(ModelElementBuilder(
-							context -> context.getValueStack().push(new SystemBuilder()), 
-							ContainerOrBoundary()),
-						ModelElementBoundaryBuilder(
-							context -> context.getValueStack().push(new SystemBoundaryBuilder()), 
-							ContainerOrBoundary(), SystemOrBoundary()))
+		return FirstOf(
+				Sequence(
+					Test("System", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
+					ModelElementBuilder(
+						Sequence("System", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
+						ZeroOrMore(
+								DescriptionDeclaration(),
+								ZeroOrMore(SpriteDeclaration(),
+										ZeroOrMore(
+												TagsDeclaration(),
+												ZeroOrMore(
+														LinkDeclaration(),
+														ZeroOrMore(
+																TypeDeclaration(),
+																ZeroOrMore(ShapeDeclaration())))))
+								),
+						context -> context.getValueStack().push(new SystemBuilder()), 
+						ContainerOrBoundary())),
+				Sequence(
+					Test("System_Boundary"),
+					ModelElementBoundaryBuilder(
+						String("System_Boundary"),
+						context -> context.getValueStack().push(new SystemBoundaryBuilder()), 
+						ContainerOrBoundary()))
 				);
 	}
 	
 	public Rule ContainerOrBoundary() {
-		return Sequence("Container",
-				Optional('_'),
-				FirstOf(ModelElementBuilder(
-							context -> context.getValueStack().push(new ContainerBuilder()), 
-							Component()), 
-						ModelElementBoundaryBuilder(
-							context -> context.getValueStack().push(new ContainerBoundaryBuilder()), 
-							Component(), ContainerOrBoundary()))
+		return FirstOf(
+				Sequence(
+					Test("Container", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
+					ModelElementBuilder(
+						Sequence("Container", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
+						ZeroOrMore(
+								TechnologyDeclaration(),
+								ZeroOrMore(
+									DescriptionDeclaration(),
+									ZeroOrMore(SpriteDeclaration(),
+											ZeroOrMore(
+													TagsDeclaration(),
+													ZeroOrMore(
+															LinkDeclaration(),
+															ZeroOrMore(ShapeDeclaration())))))
+								),
+						context -> context.getValueStack().push(new ContainerBuilder()), 
+						Component())),
+				Sequence(
+					Test("Container_Boundary"),
+					ModelElementBoundaryBuilder(
+						String("Container_Boundary"),
+						context -> context.getValueStack().push(new ContainerBoundaryBuilder()), 
+						Component(), ContainerOrBoundary()))
 				);
 	}
 	
 	public Rule EnterpriseBoundary() {
-		return Sequence(String("Enterprise_"),
-				ModelElementBoundaryBuilder(
-						context -> context.getValueStack().push(new BasicBoundaryBuilder()), 
-						SystemOrBoundary()
-						));
+		return ModelElementBoundaryBuilder(
+				String("Enterprise_Boundary"),
+				context -> context.getValueStack().push(new BasicBoundaryBuilder()), 
+				SystemOrBoundary()
+			);
 	}
 	
 	public Rule Component() {
 		Rule[] descendants = new Rule[] {
 		};
-		return Sequence("Component",
-				ModelElementBuilder(
-							context -> context.getValueStack().push(new ComponentBuilder()), 
-							descendants)
+		return ModelElementBuilder(
+				Sequence("Component", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
+				ZeroOrMore(
+						TechnologyDeclaration(),
+						ZeroOrMore(
+							DescriptionDeclaration(),
+							ZeroOrMore(SpriteDeclaration(),
+									ZeroOrMore(
+											TagsDeclaration(),
+											ZeroOrMore(
+													LinkDeclaration(),
+													ZeroOrMore(ShapeDeclaration())))))
+						),
+				context -> context.getValueStack().push(new ComponentBuilder()), 
+				descendants
+			);
+	}
+	
+	public Rule ModelElementBuilder(Rule modelElement,
+			Rule attributes,
+			Consumer<Context> consumer, Rule...descendants) {
+		return Sequence(
+				Whitespace(),
+				modelElement,
+				Ch('('),
+				runAction(consumer),
+				AliasDeclaration(),
+				LabelDeclaration(),
+				attributes,
+				Ch(')'),
+				SubBlock(descendants),
+				// Add relationship to its parent node
+				peek(1).add(pop()),
+				Whitespace()
 				);
 	}
 	
-	public Rule ModelElementBuilder(Consumer<Context> consumer, Rule...descendants) {
-		return Sequence(Optional(String("Ext")),
+	public Rule ModelElementBoundaryBuilder(Rule modelElement, 
+			Consumer<Context> consumer, Rule...descendants) {
+		return Sequence(
+				Whitespace(),
+				modelElement,
 				Ch('('),
 				runAction(consumer),
 				AliasDeclaration(),
 				LabelDeclaration(),
 				ZeroOrMore(
-					DescriptionDeclaration()
-					),
+						TypeDeclaration(),
+										TagsDeclaration(),
+										ZeroOrMore(
+												LinkDeclaration(),
+												ZeroOrMore(
+														DescriptionDeclaration(),
+														ZeroOrMore(ShapeDeclaration())))
+						),
 				Ch(')'),
 				SubBlock(descendants),
 				// Add relationship to its parent node
-				peek(1).add(pop())
-				);
-	}
-	
-	public Rule ModelElementBoundaryBuilder(Consumer<Context> consumer, Rule...descendants) {
-		return Sequence(Optional(String("Boundary")),
-				Ch('('),
-				runAction(consumer),
-				AliasDeclaration(),
-				LabelDeclaration(),
-//				ZeroOrMore(
-//					DescriptionDeclaration()
-//					),
-				Ch(')'),
-				SubBlock(descendants),
-				// Add relationship to its parent node
-				peek(1).add(pop())
+				peek(1).add(pop()),
+				Whitespace()
 				);
 	}
 
@@ -198,9 +264,34 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				'}'));
 	}
 	
+	void setLink(Context context) {
+		String link = getCleanedStringLiteralMatch(context);
+		((WithLink) context.getValueStack().peek()).withLink(link);
+	}
+	
+	void setType(Context context) {
+		String type = getCleanedStringLiteralMatch(context);
+		((WithType) context.getValueStack().peek()).withType(type);
+	}
+	
 	void setDescription(Context context) {
 		String description = getCleanedStringLiteralMatch(context);
 		((WithDescription) context.getValueStack().peek()).withDescription(description);
+	}
+	
+	void setTags(Context context) {
+		String tags = getCleanedStringLiteralMatch(context);
+		((WithTags) context.getValueStack().peek()).withTags(tags);
+	}
+	
+	void setSprite(Context context) {
+		String sprite = getCleanedStringLiteralMatch(context);
+		((WithSprite) context.getValueStack().peek()).withSprite(sprite);
+	}
+	
+	void setShape(Context context) {
+		String shape = getCleanedStringLiteralMatch(context);
+		((WithShape) context.getValueStack().peek()).withShape(shape);
 	}
 
 	static String getCleanedStringLiteralMatch(Context context) {
@@ -215,6 +306,56 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				runAction(this::setDescription),
 				Whitespace()
 				).label("Description declaration");
+	}
+
+	Rule TagsDeclaration() {
+		return Sequence(
+				Ch(','),
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setTags),
+				Whitespace()
+				).label("Sprite declaration");
+	}
+
+	Rule SpriteDeclaration() {
+		return Sequence(
+				Ch(','),
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setSprite),
+				Whitespace()
+				).label("Sprite declaration");
+	}
+
+	Rule LinkDeclaration() {
+		return Sequence(
+				Ch(','),
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setLink),
+				Whitespace()
+				).label("Link declaration");
+	}
+
+	Rule TypeDeclaration() {
+		return Sequence(
+				Ch(','),
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setType),
+				Whitespace()
+				).label("Type declaration");
+	}
+
+	Rule ShapeDeclaration() {
+		return Sequence(
+				Ch(','),
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setShape),
+				Whitespace()
+				).label("Shape declaration");
 	}
 	
 	static void setTechnology(Context context) {

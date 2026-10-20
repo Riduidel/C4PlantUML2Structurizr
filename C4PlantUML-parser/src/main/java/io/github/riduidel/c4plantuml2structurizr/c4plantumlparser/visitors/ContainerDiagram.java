@@ -38,7 +38,7 @@ public class ContainerDiagram extends C4PlantUMLDiagram {
 		 */
 		@Override
 		public Workspace endVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
-			createContainerDiagramFor(softwareSystemBuilder.getAlias(), softwareSystemBuilder.getName());
+			createContainerDiagramFor(softwareSystemBuilder.getAlias(), softwareSystemBuilder.getLabel());
 			return super.endVisitSoftwareSystem(softwareSystemBuilder);
 		}
 		

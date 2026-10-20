@@ -4,7 +4,7 @@
 Person(personAlias, "A person", "This is a person")
 System_Boundary(systemAlias, "A system") {
 	Container_Boundary(containerAlias, "A container") {
-		Component(componentAlias, "A component", "This is a component")
+		Component(componentAlias, "A component", "Component technology", "This is a component")
 	}
 }
 

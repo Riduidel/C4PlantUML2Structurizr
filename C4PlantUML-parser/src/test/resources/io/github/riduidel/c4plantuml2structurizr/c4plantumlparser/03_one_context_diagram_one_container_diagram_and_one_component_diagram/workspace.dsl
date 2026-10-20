@@ -3,7 +3,10 @@ workspace "C4_Elements" "" {
 		personAlias = Person "A person" "This is a person"
 		systemAlias = softwareSystem "A system" "This is a system" {
 			containerAlias = container "A container" "This is a container" {
-				componentAlias = component "A component" "This is a component"
+				technology "Container technology"
+				componentAlias = component "A component" "This is a component" {
+					technology "Component technology"
+				}
 			}
 		}
 		personAlias -> systemAlias "A relationship between person and system" "This is person to system technology"

@@ -24,6 +24,7 @@ import io.github.riduidel.c4plantuml2structurizr.Configuration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementAdapter;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.AbstractBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.BasicBoundaryBuilder;
@@ -99,11 +100,11 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	
 	@Override
 	public boolean startVisitPerson(PersonBuilder personBuilder) {
-		if(returned.getModel().getPersonWithName(personBuilder.getName())==null) {
-			Person person = returned.getModel().addPerson(personBuilder.getName(), personBuilder.getDescription());
+		if(returned.getModel().getPersonWithName(personBuilder.getLabel())==null) {
+			Person person = returned.getModel().addPerson(personBuilder.getLabel(), personBuilder.getDescription());
 			fillModelElement(personBuilder, person);
 		}
-		stack.push(returned.getModel().getPersonWithName(personBuilder.getName()));
+		stack.push(returned.getModel().getPersonWithName(personBuilder.getLabel()));
 		return true;
 	}
 
@@ -115,11 +116,11 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	
 	@Override
 	public boolean startVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
-		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getName())==null) {
-			SoftwareSystem software = returned.getModel().addSoftwareSystem(softwareSystemBuilder.getName(), softwareSystemBuilder.getDescription());
+		if(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getLabel())==null) {
+			SoftwareSystem software = returned.getModel().addSoftwareSystem(softwareSystemBuilder.getLabel(), softwareSystemBuilder.getDescription());
 			fillModelElement(softwareSystemBuilder, software);
 		}
-		stack.push(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getName()));
+		stack.push(returned.getModel().getSoftwareSystemWithName(softwareSystemBuilder.getLabel()));
 		return true;
 	}
 	
@@ -156,12 +157,12 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	@Override
 	public boolean startVisitContainer(ContainerBuilder containerBuilder) {
 		SoftwareSystem containingSystem = (SoftwareSystem) stack.peek();
-		if(containingSystem.getContainerWithName(containerBuilder.getName())==null) {
-			Container created = containingSystem.addContainer(containerBuilder.getName());
+		if(containingSystem.getContainerWithName(containerBuilder.getLabel())==null) {
+			Container created = containingSystem.addContainer(containerBuilder.getLabel());
 			fillModelElement(containerBuilder, created);
 			created.setTechnology(containerBuilder.getTechnology());
 		}
-		stack.push(containingSystem.getContainerWithName(containerBuilder.getName()));
+		stack.push(containingSystem.getContainerWithName(containerBuilder.getLabel()));
 		return true;
 	}
 
@@ -199,17 +200,17 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	@Override
 	public boolean startVisitComponent(ComponentBuilder componentBuilder) {
 		Container containingContainer = (Container) stack.peek();
-		if(containingContainer.getComponentWithName(componentBuilder.getName())==null) {
-			Component created = containingContainer.addComponent(componentBuilder.getName());
+		if(containingContainer.getComponentWithName(componentBuilder.getLabel())==null) {
+			Component created = containingContainer.addComponent(componentBuilder.getLabel());
 			fillModelElement(componentBuilder, created);
 			created.setTechnology(componentBuilder.getTechnology());
 		}
-		stack.push(containingContainer.getComponentWithName(componentBuilder.getName()));
+		stack.push(containingContainer.getComponentWithName(componentBuilder.getLabel()));
 		return true;
 	}
 	
 	@Override
-	public Workspace endVisitComponent(ComponentBuilder componentBuilder) {
+	public Workspace endVisitComponent(WithTechnology<ComponentBuilder> componentBuilder) {
 		stack.pop();
 		return super.endVisitComponent(componentBuilder);
 	}

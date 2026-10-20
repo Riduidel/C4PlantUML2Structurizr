@@ -107,7 +107,7 @@ public abstract class WorkspaceElementAdapter<Returned> implements WorkspaceElem
 	}
 	
 	@Override
-	public Returned endVisitComponent(ComponentBuilder componentBuilder) {
+	public Returned endVisitComponent(WithTechnology<ComponentBuilder> componentBuilder) {
 		return returned;
 	}
 

@@ -38,7 +38,7 @@ public class ComponentDiagram extends C4PlantUMLDiagram {
 		 */
 		@Override
 		public Workspace endVisitContainer(ContainerBuilder containerBuilder) {
-			createComponentDiagramFor(containerBuilder.getAlias(), containerBuilder.getName());
+			createComponentDiagramFor(containerBuilder.getAlias(), containerBuilder.getLabel());
 			return super.endVisitContainer(containerBuilder);
 		}
 		

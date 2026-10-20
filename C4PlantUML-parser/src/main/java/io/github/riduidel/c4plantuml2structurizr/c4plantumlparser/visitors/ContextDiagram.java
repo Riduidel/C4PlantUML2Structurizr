@@ -32,7 +32,7 @@ public class ContextDiagram extends C4PlantUMLDiagram {
 				SystemContextView view = returned.getViews().createSystemContextView(
 						(SoftwareSystem) stack.peek(), 
 						String.format("context_of_%s", softwareSystemBuilder.getAlias()));
-				view.setDescription(String.format("Context view of \"%s\"", softwareSystemBuilder.getName()));
+				view.setDescription(String.format("Context view of \"%s\"", softwareSystemBuilder.getLabel()));
 			}
 			return super.endVisitSoftwareSystem(softwareSystemBuilder);
 		}

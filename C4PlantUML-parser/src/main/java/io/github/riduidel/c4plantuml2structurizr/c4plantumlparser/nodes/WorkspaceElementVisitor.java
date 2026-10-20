@@ -56,7 +56,7 @@ public interface WorkspaceElementVisitor<Returned> {
 
 	boolean startVisitComponent(ComponentBuilder componentBuilder);
 
-	Returned endVisitComponent(ComponentBuilder componentBuilder);
+	Returned endVisitComponent(WithTechnology<ComponentBuilder> componentBuilder);
 
 	boolean startVisitComponentDiagram(ComponentDiagram componentDiagram);
 

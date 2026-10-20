@@ -1,23 +1,30 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model;
 
-import java.util.Stack;
-
-import com.structurizr.Workspace;
 import com.structurizr.model.StaticStructureElement;
 
-import io.github.riduidel.c4plantuml2structurizr.Configuration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithAlias;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLink;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithSprite;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTags;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
 
 public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilder, BuiltType extends StaticStructureElement> 
 	extends WorkspaceElementBuilder 
-	implements WithAlias<BuilderType>, WithLabel<BuilderType>, WithDescription<BuilderType> {
+	implements WithAlias<BuilderType>, 
+		WithLabel<BuilderType>, 
+		WithDescription<BuilderType>,
+		WithSprite<BuilderType>,
+		WithTags<BuilderType>,
+		WithLink<BuilderType> {
 
 	private String alias;
-	protected String name;
-	protected String description;
+	private String name;
+	private String description;
+	private String sprite;
+	private String tags;
+	private String link;
 
 	public void setAlias(String match) {
 		this.alias = match;
@@ -53,11 +60,41 @@ public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilde
 		return alias;
 	}
 
-	public String getName() {
+	public String getLabel() {
 		return name;
 	}
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String getSprite() {
+		return sprite;
+	}
+
+	@Override
+	public BuilderType withSprite(String match) {
+		this.sprite = sprite;
+		return (BuilderType) this;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	@Override
+	public BuilderType withTags(String tags) {
+		this.tags = tags;
+		return (BuilderType) this;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	@Override
+	public BuilderType withLink(String link) {
+		this.link = link;
+		return (BuilderType) this;
 	}
 }
