@@ -24,6 +24,7 @@ import com.github.fge.lambdas.Throwing;
 import com.structurizr.Workspace;
 import com.structurizr.dsl.StructurizrDslParserException;
 
+import io.github.riduidel.c4plantuml2structurizr.C4PlantUMLParserException;
 import io.github.riduidel.c4plantuml2structurizr.writer.WorkspaceWriter;
 import io.github.riduidel.structurizr.StreamUtils;
 import io.github.riduidel.structurizr.StructurizrTestUtils;
@@ -88,7 +89,8 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 		File structurizrFile = Files.walk(testFolder.toPath())
 				.filter(p -> structurizr.matches(p))
 				.map(Path::toFile)
-				.findFirst().get();
+				.findFirst()
+				.orElseThrow(() -> new C4PlantUMLParserException("Couldn't find any workspace.dsl file in "+testFolder.toPath()));
 
 		List<Object> args = new ArrayList<>();
 		args.add(testFolder.getName());

@@ -266,46 +266,16 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 		}
 	}
 	
-	private boolean startVisitDiagram(C4PlantUMLDiagram contextDiagram) {
+	public boolean startVisitDiagram(C4PlantUMLDiagram contextDiagram) {
 		stack.push(contextDiagram);
 		diagrams.push(contextDiagram);
 		return true;
 	}
 	
-	private Workspace endVisitDiagram(C4PlantUMLDiagram contextDiagram) {
+	public Workspace endVisitDiagram(C4PlantUMLDiagram contextDiagram) {
 		stack.pop();
 		diagrams.pop();
 		return returned;
-	}
-	
-	@Override
-	public boolean startVistContextDiagram(ContextDiagram contextDiagram) {
-		return startVisitDiagram(contextDiagram);
-	}
-
-	@Override
-	public Workspace endVisitContextDiagram(ContextDiagram contextDiagram) {
-		return endVisitDiagram(contextDiagram);
-	}
-	
-	@Override
-	public boolean startVisitContainerDiagram(ContainerDiagram containerDiagram) {
-		return startVisitDiagram(containerDiagram);
-	}
-	
-	@Override
-	public Workspace endVisitContainerDiagram(ContainerDiagram containerDiagram) {
-		return endVisitDiagram(containerDiagram);
-	}
-	
-	@Override
-	public boolean startVisitComponentDiagram(ComponentDiagram componentDiagram) {
-		return startVisitDiagram(componentDiagram);
-	}
-	
-	@Override
-	public Workspace endVisitComponentDiagram(ComponentDiagram componentDiagram) {
-		return endVisitDiagram(componentDiagram);
 	}
 	
 	@Override

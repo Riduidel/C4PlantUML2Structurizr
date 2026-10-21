@@ -61,16 +61,4 @@ public class ContainerDiagram extends C4PlantUMLDiagram {
 	public Workspace build(Configuration configuration) {
 		return accept(new BuildContainerDiagramVisitor(returned, source, configuration));
 	}
-
-	@Override
-	protected boolean startVisit(WorkspaceElementVisitor visitor) {
-		return visitor.startVisitContainerDiagram(this);
-		
-	}
-
-	@Override
-	protected <Type> Type endVisit(WorkspaceElementVisitor<Type> visitor) {
-		return visitor.endVisitContainerDiagram(this);
-	}
-
 }

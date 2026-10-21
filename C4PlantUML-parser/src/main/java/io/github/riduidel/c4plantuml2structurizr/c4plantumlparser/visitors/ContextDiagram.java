@@ -46,14 +46,4 @@ public class ContextDiagram extends C4PlantUMLDiagram {
 	public Workspace build(Configuration configuration) {
 		return accept(new BuildContextDiagramVisitor(source, configuration));
 	}
-
-	@Override
-	protected boolean startVisit(WorkspaceElementVisitor visitor) {
-		return visitor.startVistContextDiagram(this);
-	}
-
-	@Override
-	protected <Type> Type endVisit(WorkspaceElementVisitor<Type> visitor) {
-		return visitor.endVisitContextDiagram(this);
-	}
 }

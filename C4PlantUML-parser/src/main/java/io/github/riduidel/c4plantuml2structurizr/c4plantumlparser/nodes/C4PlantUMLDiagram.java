@@ -15,4 +15,14 @@ public abstract class C4PlantUMLDiagram extends WorkspaceElementBuilder {
 	}
 
 	public abstract Workspace build(Configuration configuration);
+	
+	@Override
+	protected boolean startVisit(WorkspaceElementVisitor visitor) {
+		return visitor.startVisitDiagram(this);
+	}
+	
+	@Override
+	protected <Type> Type endVisit(WorkspaceElementVisitor<Type> visitor) {
+		return visitor.endVisitDiagram(this);
+	}
 }

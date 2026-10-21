@@ -61,16 +61,4 @@ public class ComponentDiagram extends C4PlantUMLDiagram {
 	public Workspace build(Configuration configuration) {
 		return accept(new BuildComponentDiagramVisitor(returned, source, configuration));
 	}
-
-	@Override
-	protected boolean startVisit(WorkspaceElementVisitor visitor) {
-		return visitor.startVisitComponentDiagram(this);
-		
-	}
-
-	@Override
-	protected <Type> Type endVisit(WorkspaceElementVisitor<Type> visitor) {
-		return visitor.endVisitComponentDiagram(this);
-	}
-
 }

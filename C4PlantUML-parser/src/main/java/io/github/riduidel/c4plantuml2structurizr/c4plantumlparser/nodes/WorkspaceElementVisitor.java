@@ -13,6 +13,10 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.Conta
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
 
 public interface WorkspaceElementVisitor<Returned> {
+	
+	boolean startVisitDiagram(C4PlantUMLDiagram contextDiagram);
+	
+	Returned endVisitDiagram(C4PlantUMLDiagram contextDiagram);
 
 	boolean startVisitPlantUMLBlock(PlantUMLBlock plantUMLBlock);
 
@@ -34,14 +38,6 @@ public interface WorkspaceElementVisitor<Returned> {
 
 	Returned endVisitSoftwareSystem(SystemBuilder softwareSystemBuilder);
 
-	boolean startVistContextDiagram(ContextDiagram contextDiagram);
-
-	Returned endVisitContextDiagram(ContextDiagram contextDiagram);
-
-	boolean startVisitContainerDiagram(ContainerDiagram containerDiagram);
-
-	Returned endVisitContainerDiagram(ContainerDiagram containerDiagram);
-
 	boolean startVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder);
 
 	Returned endVisitSystemBoundary(SystemBoundaryBuilder softwareSystemBoundaryBuilder);
@@ -57,10 +53,6 @@ public interface WorkspaceElementVisitor<Returned> {
 	boolean startVisitComponent(ComponentBuilder componentBuilder);
 
 	Returned endVisitComponent(WithTechnology<ComponentBuilder> componentBuilder);
-
-	boolean startVisitComponentDiagram(ComponentDiagram componentDiagram);
-
-	Returned endVisitComponentDiagram(ComponentDiagram componentDiagram);
 
 	boolean startVisitBasicBoundary(BasicBoundaryBuilder basicBoundaryBuilder);
 
