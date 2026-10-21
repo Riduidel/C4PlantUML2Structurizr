@@ -358,7 +358,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		writeStaticView(v,
 				new StringBuilder().append("systemContext")
 					.append(" ").append(getVariableName(v.getSoftwareSystem()).orElseThrow(
-							() -> new RuntimeException(String.format("Unable to write view %s refering to variable-less software system %s", 
+							() -> new StructurizrDslWriterException(String.format("Unable to write view %s refering to variable-less software system %s", 
 									v.getKey(),
 									v.getSoftwareSystem()))))
 					.append(" ").append(v.getKey()));
@@ -375,7 +375,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		writeStaticView(v,
 				new StringBuilder().append("container")
 					.append(" ").append(getVariableName(v.getSoftwareSystem()).orElseThrow(
-							() -> new RuntimeException(String.format("Unable to write view %s refering to variable-less software system %s", 
+							() -> new StructurizrDslWriterException(String.format("Unable to write view %s refering to variable-less software system %s", 
 									v.getKey(),
 									v.getSoftwareSystem()))))
 					.append(" ").append(v.getKey()));
@@ -392,7 +392,7 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		writeStaticView(v,
 				new StringBuilder().append("component")
 					.append(" ").append(getVariableName(v.getContainer()).orElseThrow(
-							() -> new RuntimeException(String.format("Unable to write view %s refering to variable-less container %s", 
+							() -> new StructurizrDslWriterException(String.format("Unable to write view %s refering to variable-less container %s", 
 									v.getKey(),
 									v.getContainer()))))
 					.append(" ").append(v.getKey()));

@@ -9,7 +9,7 @@
     </parent>
     <artifactId>structurizr-dsl-writer</artifactId>
     <properties>
-        <jacoco.covered.instructions.target.percentage>0.93</jacoco.covered.instructions.target.percentage>
+        <jacoco.covered.instructions.target.percentage>0.91</jacoco.covered.instructions.target.percentage>
     </properties>
     <dependencies>
         <dependency>

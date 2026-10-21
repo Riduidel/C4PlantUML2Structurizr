@@ -18,7 +18,7 @@ public class StructurizrHack {
 					String.class, String.class, InteractionStyle.class, String[].class);
 			addRelationshipMethod.setAccessible(true);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new StructurizrCopierException(e);
 		}
 	}
 
@@ -28,7 +28,7 @@ public class StructurizrHack {
 			return (Relationship) addRelationshipMethod.invoke(into, source, destination, description, technology,
 					interactionStyle, split);
 		} catch (Exception e) {
-			throw new RuntimeException("Unable to mess with Structurizr", e);
+			throw new StructurizrCopierException("Unable to mess with Structurizr", e);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class StructurizrHack {
 			return new ModifiableMapProxMaker(holderClass).proxify(holder);
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchMethodException | SecurityException
 				| NoSuchFieldException e) {
-			throw new RuntimeException(String.format("Could not build a proxy for %s", holder), e);
+			throw new StructurizrCopierException(String.format("Could not build a proxy for %s", holder), e);
 		}
 	}
 }

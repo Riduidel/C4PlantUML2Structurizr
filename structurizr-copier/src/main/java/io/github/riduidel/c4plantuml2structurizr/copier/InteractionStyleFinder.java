@@ -39,7 +39,7 @@ public class InteractionStyleFinder {
 				mappings.store(output, null);
 			}
 		} catch(IOException e) {
-			throw new RuntimeException(String.format("Unable to write properties to %s", MAPPINGS_FILE), e);
+			throw new StructurizrCopierException(String.format("Unable to write properties to %s", MAPPINGS_FILE), e);
 		}
 	}
 
@@ -51,7 +51,7 @@ public class InteractionStyleFinder {
 				mappings = used;
 			}
 		} catch(IOException e) {
-			throw new RuntimeException(String.format("Unable to read properties from %s", MAPPINGS_FILE), e);
+			throw new StructurizrCopierException(String.format("Unable to read properties from %s", MAPPINGS_FILE), e);
 		}
 	}
 }
