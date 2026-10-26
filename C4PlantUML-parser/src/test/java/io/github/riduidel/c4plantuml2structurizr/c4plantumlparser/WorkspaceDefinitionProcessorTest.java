@@ -29,7 +29,7 @@ import io.github.riduidel.c4plantuml2structurizr.writer.WorkspaceWriter;
 import io.github.riduidel.structurizr.StreamUtils;
 import io.github.riduidel.structurizr.StructurizrTestUtils;
 
-class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
+class WorkspaceDefinitionProcessorTest extends WorkspaceBuilder {
 	private static final Logger logger = Logger.getLogger(WorkspaceDefinitionProcessorTest.class.getName());
 	static PathMatcher plantuml = FileSystems.getDefault().getPathMatcher("glob:**/*.{plantuml,puml}");
 	static PathMatcher structurizr = FileSystems.getDefault().getPathMatcher("glob:**/*.dsl");
@@ -107,7 +107,7 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceDefinitionProcessor {
 		// Given
 		Workspace expected = StructurizrTestUtils.toWorkspace(workspace);
 		// When
-		Workspace parsed = new WorkspaceDefinitionProcessor().parse(diagrams);
+		Workspace parsed = new WorkspaceBuilder().parse(diagrams);
 		// Then
 		try {
 			Assertions.assertThat(parsed).usingRecursiveComparison()

@@ -1,5 +1,7 @@
 package io.github.riduidel.c4plantuml2structurizr;
 
+import java.nio.file.Path;
+
 public class Configuration {
 	public String variableProperty = "structurizr.dsl.identifier";
 	/**
@@ -19,4 +21,8 @@ public class Configuration {
 	 * Regexp used to split tags
 	 */
 	public String tagSeparator = ",";
+	public IncludeElements includeElements = IncludeElements.FOLDER_AND_BELOW;
+	public Configuration inInclude(Path otherPath) {
+		return this;
+	}
 }

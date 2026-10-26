@@ -1,8 +1,14 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -14,8 +20,11 @@ import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.MemoMismatches;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.SuppressSubnodes;
-import org.parboiled.support.Var;
+import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ValueStack;
 
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.WorkspaceBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithAlias;
@@ -36,6 +45,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.Co
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.IncludedDiagram;
 
 /**
  * Parses a plantuml diagram.
@@ -408,19 +418,56 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	// Will be changed to separate handling of local vs remote includes
 	public Rule Include() {
-        Var<String> included = new Var<String>(); // we use an action variable to hold the operator character
 		return Sequence(
 				Whitespace(),
 				String("!include "),
 				Whitespace(),
 				Optional(Ch('"')),
 				ZeroOrMore(NoneOf("\n")),
-				included.set(match()),
+				runAction(this::processInclude),
 				Optional(Ch('"')),
-				String("\n"),
-				((WorkspaceElementBuilder) peek()).add(new Include(included.get()))
+				String("\n")
 				)
 				.label("!include ...");
+	}
+
+	public void processInclude(Context context) {
+		ValueStack valueStack = context.getValueStack();
+		WorkspaceElementBuilder container = (WorkspaceElementBuilder) valueStack.peek();
+		String includePath = context.getMatch();
+		// Explore the value stack looking for the latest diagram declaration
+		Optional<C4PlantUMLDiagram> containing = StreamSupport.stream(valueStack.spliterator(), false)
+			.filter(element -> element instanceof C4PlantUMLDiagram)
+			.map(d -> ((C4PlantUMLDiagram) d))
+			.reduce((first, second) -> second);
+		containing.ifPresent(containingDiagram -> {
+				// We now can resolve url
+				processIncludeIn(containingDiagram, container, includePath);
+			});
+	}
+
+	private void processIncludeIn(C4PlantUMLDiagram containingDiagram, 
+			WorkspaceElementBuilder container,
+			String includePath) {
+		Include include = new Include(includePath);
+		container.add(include);
+		try {
+			URI uri = new URI(includePath);
+			if(uri.getScheme()==null || uri.getScheme().equals("file")) {
+				Path includedPath = containingDiagram.source.getParentFile().toPath().resolve(uri.getPath());
+				C4PlantUMLDiagram diagram = new IncludedDiagram(includedPath.toFile());
+				ParsingResult<WorkspaceElementBuilder> result = WorkspaceBuilder.parseFileToResult(diagram);
+				if(!result.hasErrors()) {
+					include.add(result.resultValue);
+				}
+			} else {
+				// Would love to log that
+			}
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("TODO handle URISyntaxException", e);
+		} catch (IOException e) {
+			throw new RuntimeException("TODO handle IOException", e);
+		}
 	}
 
 	@Override

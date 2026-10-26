@@ -12,18 +12,15 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Workspac
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.SystemBoundaryBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
 
-public class ContainerDiagram extends C4PlantUMLDiagram {
-	public static class BuildContainerDiagramVisitor extends WorkspaceBuilderVisitor {
-		private File source;
+public class ContainerDiagram extends BuildableC4PlantUMLDiagram {
+	public static class BuildContainerDiagramVisitor extends DiagramBuilderVisitor {
 
 		public BuildContainerDiagramVisitor(Workspace workspace, File source, Configuration configuration) {
-			super(configuration);
-			this.returned = workspace;
-			this.source = source;
+			super(workspace, source, configuration);
 		}
 		
 		private void createContainerDiagramFor(String alias, String name) {
-			if(source.equals(diagrams.peek().source)) {
+			if(isDeclaredInDiagram()) {
 				// software system is declared in file, so add the corresponding view
 				ContainerView view = returned.getViews().createContainerView(
 						(SoftwareSystem) stack.peek(), 

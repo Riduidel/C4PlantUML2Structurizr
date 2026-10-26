@@ -21,16 +21,17 @@ import io.github.riduidel.c4plantuml2structurizr.Configuration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser.C4PlantUMLParser;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.BuildableC4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ComponentDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContainerDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
 
-public class WorkspaceDefinitionProcessor {
-	private static final Logger logger = Logger.getLogger(WorkspaceDefinitionProcessor.class.getName());
+public class WorkspaceBuilder {
+	private static final Logger logger = Logger.getLogger(WorkspaceBuilder.class.getName());
 	
 	private DiagramTypeDetector detector = new DiagramTypeDetector();
 	
-	private C4PlantUMLParser parser = Parboiled.createParser(C4PlantUMLParser.class);
+	private static C4PlantUMLParser parser = Parboiled.createParser(C4PlantUMLParser.class);
 	
 	private Configuration configuration = new Configuration();
 
@@ -66,19 +67,14 @@ public class WorkspaceDefinitionProcessor {
 		return parseFile(new ContextDiagram(context));
 	}
 
-	private Workspace parseFile(C4PlantUMLDiagram root) throws IOException {
+	private Workspace parseFile(BuildableC4PlantUMLDiagram root) throws IOException {
+		return parseFile(root, configuration);
+	}
+
+	private static Workspace parseFile(BuildableC4PlantUMLDiagram root, Configuration configuration) throws IOException {
 		File diagramFile = root.source;
 		try {
-			logger.info("Parsing file "+diagramFile.getAbsolutePath());
-			String fileContent = Files.readString(diagramFile.toPath());
-			ParsingResult<WorkspaceElementBuilder> result = new ReportingParseRunner(parser.diagram())
-					.withValueStack(new DefaultValueStack<WorkspaceElementBuilder>(Arrays.asList(root)))
-					.run(fileContent);
-	        if (result.hasErrors()) {
-	        	throw new RuntimeException(String.format("File %s has parsing errrors\n%s",
-	        			diagramFile,
-	        			ErrorUtils.printParseErrors(result.parseErrors)));
-	        }
+			ParsingResult<WorkspaceElementBuilder> result = parseFileToResult(root);
 	        if(result.parseTreeRoot.getValue()==root) {
 	        	return root.build(configuration);
 	        } else {
@@ -87,5 +83,21 @@ public class WorkspaceDefinitionProcessor {
 		} catch(ParserRuntimeException e) {
 			throw new RuntimeException(String.format("Unable to parse %s", diagramFile), e);
 		}
+	}
+
+	public static ParsingResult<WorkspaceElementBuilder> parseFileToResult(C4PlantUMLDiagram root)
+			throws IOException {
+		File diagramFile = root.source;
+		logger.info("Parsing file "+diagramFile.getAbsolutePath());
+		String fileContent = Files.readString(diagramFile.toPath());
+		ParsingResult<WorkspaceElementBuilder> result = new ReportingParseRunner(parser.diagram())
+				.withValueStack(new DefaultValueStack<WorkspaceElementBuilder>(Arrays.asList(root)))
+				.run(fileContent);
+		if (result.hasErrors()) {
+			throw new RuntimeException(String.format("File %s has parsing errrors\n%s",
+					diagramFile,
+					ErrorUtils.printParseErrors(result.parseErrors)));
+		}
+		return result;
 	}
 }

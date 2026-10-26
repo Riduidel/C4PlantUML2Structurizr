@@ -1,11 +1,17 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.structurizr.PropertyHolder;
@@ -21,6 +27,7 @@ import com.structurizr.model.SoftwareSystem;
 import com.structurizr.model.StaticStructureElement;
 
 import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.WorkspaceBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
@@ -40,8 +47,9 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.Conte
 import io.github.riduidel.c4plantuml2structurizr.copier.StructurizrHack;
 
 public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> {
+	private static final Logger logger = Logger.getLogger(WorkspaceBuilderVisitor.class.getName());
 
-	private Configuration configuration;
+	protected Configuration configuration;
 	
 	protected Stack stack = new Stack();
 
@@ -52,8 +60,12 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 	 */
 	protected Stack<C4PlantUMLDiagram> diagrams = new Stack<>();
 
-	public WorkspaceBuilderVisitor(Configuration configuration) {
+	protected File source;
+
+	public WorkspaceBuilderVisitor(Workspace workspace, File source, Configuration configuration) {
+		this.source = source;
 		this.configuration = configuration;
+		this.returned = workspace;
 	}
 	
 	@Override
@@ -72,10 +84,13 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 		return super.endVisitPlantUMLBlock(plantUMLBlock);
 	}
 	
+	/**
+	 * An include should contain an IncludedDiagram which will in turn declare the whole model elements.
+	 * BUT BEWARE: There should be some mechanism to prevent them from generating diagram elements, otherwise we may have too much model elements
+	 */
 	@Override
 	public boolean startVisitInclude(Include include) {
-		// I think I'll have to change that
-		return false;
+		return true;
 	}
 	
 	@Override

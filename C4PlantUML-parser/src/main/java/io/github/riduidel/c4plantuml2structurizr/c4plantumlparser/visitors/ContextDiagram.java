@@ -11,14 +11,12 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantU
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
 
-public class ContextDiagram extends C4PlantUMLDiagram {
-	public static class BuildContextDiagramVisitor extends WorkspaceBuilderVisitor {
-
-		private File source;
+public class ContextDiagram extends BuildableC4PlantUMLDiagram {
+	public static class BuildContextDiagramVisitor extends DiagramBuilderVisitor {
 
 		public BuildContextDiagramVisitor(File source, Configuration configuration) {
-			super(configuration);
-			this.source = source;
+			// If null is given as argument, a new Workspace will be created
+			super(null, source, configuration);
 		}
 
 		/**
@@ -27,7 +25,7 @@ public class ContextDiagram extends C4PlantUMLDiagram {
 		 */
 		@Override
 		public Workspace endVisitSoftwareSystem(SystemBuilder softwareSystemBuilder) {
-			if(source.equals(diagrams.peek().source)) {
+			if(isDeclaredInDiagram()) {
 				// software system is declared in file, so add the corresponding view
 				SystemContextView view = returned.getViews().createSystemContextView(
 						(SoftwareSystem) stack.peek(), 

@@ -13,8 +13,6 @@ public abstract class C4PlantUMLDiagram extends WorkspaceElementBuilder {
 	public C4PlantUMLDiagram(File context) {
 		source = context;
 	}
-
-	public abstract Workspace build(Configuration configuration);
 	
 	@Override
 	protected boolean startVisit(WorkspaceElementVisitor visitor) {

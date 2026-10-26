@@ -2,7 +2,7 @@ package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes;
 
 public class Include extends WorkspaceElementBuilder{
 
-	private String url;
+	public final String url;
 
 	public Include(String url) {
 		this.url = url;
