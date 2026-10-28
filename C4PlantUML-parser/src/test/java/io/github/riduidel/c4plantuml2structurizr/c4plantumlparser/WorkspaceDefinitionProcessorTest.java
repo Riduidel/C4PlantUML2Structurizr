@@ -26,6 +26,7 @@ import com.structurizr.dsl.StructurizrDslParserException;
 
 import io.github.riduidel.c4plantuml2structurizr.C4PlantUMLParserException;
 import io.github.riduidel.c4plantuml2structurizr.writer.WorkspaceWriter;
+import io.github.riduidel.c4plantuml2structurizr.writer.WriterConfiguration;
 import io.github.riduidel.structurizr.StreamUtils;
 import io.github.riduidel.structurizr.StructurizrTestUtils;
 
@@ -117,7 +118,7 @@ class WorkspaceDefinitionProcessorTest extends WorkspaceBuilder {
 						".*properties|.*interactionStyle|.*tags|.*id|.*idGenerator.*|.*elementsById|.*relationshipsById|.*sourceId|.*destinationId|.*containerId|.*softwareSystemId")
 				.isEqualTo(expected);
 		} catch(AssertionError | RuntimeException e) {
-			WorkspaceWriter writer = new WorkspaceWriter();
+			WorkspaceWriter writer = new WorkspaceWriter(new WriterConfiguration());
 			String effective = writer.write(parsed);
 			logger.severe(String.format("""
 					 Workspace parsed from %s is invalid

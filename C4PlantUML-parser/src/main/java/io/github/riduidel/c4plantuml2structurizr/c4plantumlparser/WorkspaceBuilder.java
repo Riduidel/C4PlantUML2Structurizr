@@ -88,7 +88,7 @@ public class WorkspaceBuilder {
 	public static ParsingResult<WorkspaceElementBuilder> parseFileToResult(C4PlantUMLDiagram root)
 			throws IOException {
 		File diagramFile = root.source;
-		logger.info("Parsing file "+diagramFile.getAbsolutePath());
+		logger.fine("Parsing file "+diagramFile.getAbsolutePath());
 		String fileContent = Files.readString(diagramFile.toPath());
 		ParsingResult<WorkspaceElementBuilder> result = new ReportingParseRunner(parser.diagram())
 				.withValueStack(new DefaultValueStack<WorkspaceElementBuilder>(Arrays.asList(root)))
