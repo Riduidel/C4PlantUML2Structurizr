@@ -4,11 +4,11 @@ import java.io.File;
 
 import com.structurizr.Workspace;
 
-import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.ConverterConfiguration;
 
 public abstract class DiagramBuilderVisitor extends WorkspaceBuilderVisitor {
 
-	public DiagramBuilderVisitor(Workspace workspace, File source, Configuration configuration) {
+	public DiagramBuilderVisitor(Workspace workspace, File source, ConverterConfiguration configuration) {
 		super(workspace, source, configuration);
 	}
 

@@ -17,7 +17,7 @@ import org.parboiled.support.ParsingResult;
 import com.github.fge.lambdas.Throwing;
 import com.structurizr.Workspace;
 
-import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.ConverterConfiguration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser.C4PlantUMLParser;
@@ -33,7 +33,7 @@ public class WorkspaceBuilder {
 	
 	private static C4PlantUMLParser parser = Parboiled.createParser(C4PlantUMLParser.class);
 	
-	private Configuration configuration = new Configuration();
+	private ConverterConfiguration configuration = new ConverterConfiguration();
 
 	/**
 	 * Parses an indifferentiate list of files into a Structurizr workspace
@@ -71,7 +71,7 @@ public class WorkspaceBuilder {
 		return parseFile(root, configuration);
 	}
 
-	private static Workspace parseFile(BuildableC4PlantUMLDiagram root, Configuration configuration) throws IOException {
+	private static Workspace parseFile(BuildableC4PlantUMLDiagram root, ConverterConfiguration configuration) throws IOException {
 		File diagramFile = root.source;
 		try {
 			ParsingResult<WorkspaceElementBuilder> result = parseFileToResult(root);

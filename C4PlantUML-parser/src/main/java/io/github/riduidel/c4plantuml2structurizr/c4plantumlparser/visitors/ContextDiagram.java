@@ -6,7 +6,7 @@ import com.structurizr.Workspace;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.view.SystemContextView;
 
-import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.ConverterConfiguration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
@@ -14,7 +14,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.Sy
 public class ContextDiagram extends BuildableC4PlantUMLDiagram {
 	public static class BuildContextDiagramVisitor extends DiagramBuilderVisitor {
 
-		public BuildContextDiagramVisitor(File source, Configuration configuration) {
+		public BuildContextDiagramVisitor(File source, ConverterConfiguration configuration) {
 			// If null is given as argument, a new Workspace will be created
 			super(null, source, configuration);
 		}
@@ -41,7 +41,7 @@ public class ContextDiagram extends BuildableC4PlantUMLDiagram {
 	}
 
 	@Override
-	public Workspace build(Configuration configuration) {
+	public Workspace build(ConverterConfiguration configuration) {
 		return accept(new BuildContextDiagramVisitor(source, configuration));
 	}
 }

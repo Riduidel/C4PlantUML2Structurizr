@@ -26,7 +26,7 @@ import com.structurizr.model.Relationship;
 import com.structurizr.model.SoftwareSystem;
 import com.structurizr.model.StaticStructureElement;
 
-import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.ConverterConfiguration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.WorkspaceBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
@@ -49,7 +49,7 @@ import io.github.riduidel.c4plantuml2structurizr.copier.StructurizrHack;
 public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> {
 	private static final Logger logger = Logger.getLogger(WorkspaceBuilderVisitor.class.getName());
 
-	protected Configuration configuration;
+	protected ConverterConfiguration configuration;
 	
 	protected Stack stack = new Stack();
 
@@ -62,7 +62,7 @@ public class WorkspaceBuilderVisitor extends WorkspaceElementAdapter<Workspace> 
 
 	protected File source;
 
-	public WorkspaceBuilderVisitor(Workspace workspace, File source, Configuration configuration) {
+	public WorkspaceBuilderVisitor(Workspace workspace, File source, ConverterConfiguration configuration) {
 		this.source = source;
 		this.configuration = configuration;
 		this.returned = workspace;

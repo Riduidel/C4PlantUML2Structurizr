@@ -5,7 +5,7 @@ import java.util.Stack;
 import com.structurizr.Workspace;
 import com.structurizr.model.StaticStructureElement;
 
-import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.ConverterConfiguration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithAlias;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;

@@ -6,7 +6,7 @@ import java.util.Stack;
 
 import com.structurizr.Workspace;
 
-import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.ConverterConfiguration;
 
 public abstract class WorkspaceElementBuilder {
 	protected List<WorkspaceElementBuilder> children = new ArrayList<>();

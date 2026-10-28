@@ -6,7 +6,7 @@ import com.structurizr.Workspace;
 import com.structurizr.model.Container;
 import com.structurizr.view.ComponentView;
 
-import io.github.riduidel.c4plantuml2structurizr.Configuration;
+import io.github.riduidel.c4plantuml2structurizr.ConverterConfiguration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.boundaries.ContainerBoundaryBuilder;
@@ -15,7 +15,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.Co
 public class ComponentDiagram extends BuildableC4PlantUMLDiagram {
 	public static class BuildComponentDiagramVisitor extends DiagramBuilderVisitor {
 
-		public BuildComponentDiagramVisitor(Workspace workspace, File source, Configuration configuration) {
+		public BuildComponentDiagramVisitor(Workspace workspace, File source, ConverterConfiguration configuration) {
 			super(workspace, source, configuration);
 		}
 		
@@ -55,7 +55,7 @@ public class ComponentDiagram extends BuildableC4PlantUMLDiagram {
 	}
 
 	@Override
-	public Workspace build(Configuration configuration) {
+	public Workspace build(ConverterConfiguration configuration) {
 		return accept(new BuildComponentDiagramVisitor(returned, source, configuration));
 	}
 }

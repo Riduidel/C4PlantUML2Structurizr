@@ -2,7 +2,7 @@ package io.github.riduidel.c4plantuml2structurizr;
 
 import java.nio.file.Path;
 
-public class Configuration {
+public class ConverterConfiguration {
 	public String variableProperty = "structurizr.dsl.identifier";
 	/**
 	 * Do not change that value, Structurizr relies upon it
@@ -22,7 +22,7 @@ public class Configuration {
 	 */
 	public String tagSeparator = ",";
 	public IncludeElements includeElements = IncludeElements.FOLDER_AND_BELOW;
-	public Configuration inInclude(Path otherPath) {
+	public ConverterConfiguration inInclude(Path otherPath) {
 		return this;
 	}
 }
