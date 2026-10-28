@@ -25,11 +25,12 @@ import io.github.riduidel.structurizr.StructurizrTestUtils;
 
 class WorkspaceWriterTest {
 	private static final Logger logger = Logger.getLogger(WorkspaceWriterTest.class.getName());
+	public static WriterConfiguration configuration = new WriterConfiguration();
 
 	static Stream<Arguments> can_write_a_dsl_file() throws URISyntaxException, IOException {
 		PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**/*.dsl");
 		// Now read the whole folder of examples
-		URL resource = WorkspaceWriterTest.class.getClassLoader().getResource(WorkspaceWriterTest.class.getPackageName().replace('.', '/'));
+		URL resource = WorkspaceWriterTest.class.getClassLoader().getResource(WorkspaceWriterTest.class.getName().replace('.', '/'));
         Path dirPath = Paths.get(resource.toURI());  
         try (Stream<Path> stream = Files.list(dirPath)) {
         	// Convert the paths to Workspace objects
@@ -38,6 +39,7 @@ class WorkspaceWriterTest {
 					.filter(StreamUtils.andLogFilteredOutValues(
 							path -> matcher.matches(path), 
 							p -> logger.info("REFUSED "+p)))
+					.filter(path -> !path.getFileName().toString().startsWith("_"))
 					.sorted(Path::compareTo)
             		.map(path -> Arguments.of(path.toFile().getName(), path.toFile()))
             		.toList()
@@ -53,7 +55,7 @@ class WorkspaceWriterTest {
 		Workspace workspace = StructurizrTestUtils.toWorkspace(source);
 		workspace.removeProperty("structurizr.dsl");
 		// When
-		String actual = new WorkspaceWriter().write(workspace);
+		String actual = new WorkspaceWriter(configuration).write(workspace);
 		// Then
 		String expected = Files.readString(source.toPath());
 		Assertions.assertThat(actual).isEqualTo(expected);

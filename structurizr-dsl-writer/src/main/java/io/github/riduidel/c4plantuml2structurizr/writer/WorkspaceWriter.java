@@ -38,6 +38,11 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	String prefix = "";
 	Stack<List<StringBuilder>> fragments = new Stack<>();
 	private String fullString;
+	private WriterConfiguration configuration;
+
+	public WorkspaceWriter(WriterConfiguration configuration) {
+		this.configuration = configuration;
+	}
 
 	public String write(Workspace workspace) {
 		GroupAwareWorkspaceVisitor visitor = new GroupAwareWorkspaceVisitor(this);
@@ -83,9 +88,19 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 	
 	@Override
 	public void endVisit(Workspace workspace) {
+		List<StringBuilder> prefix = new ArrayList<StringBuilder>();
+		String includes = workspace.getProperties().getOrDefault(configuration.include, "");
+		StringBuilder includesText = new StringBuilder();
+		for(String path : includes.split(configuration.includeSeparator)) {
+			includesText.append("\t").append("!include ").append(path).append('\n');
+		}
+		prefix.add(includesText);
+		prefix.add(writeProperties(workspace));
 		writeElementInFragments(
 				true,
-				new StringBuilder().append("workspace \"").append(workspace.getName()).append("\""), writeProperties(workspace)
+				new StringBuilder().append("workspace \"").append(workspace.getName()).append("\""), 
+				prefix,
+				Arrays.asList()
 				);
 		super.endVisit(workspace);
 	}
