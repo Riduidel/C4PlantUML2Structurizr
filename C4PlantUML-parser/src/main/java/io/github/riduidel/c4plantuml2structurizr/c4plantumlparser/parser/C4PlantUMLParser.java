@@ -83,11 +83,11 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 	}
 
 	void setSourceAlias(Context context) {
-		((RelationshipBuilder) context.getValueStack().peek()).setSourceAlias(match());
+		((RelationshipBuilder) context.getValueStack().peek()).setSourceAlias(context.getMatch());
 	}
 	
 	void setTargetAlias(Context context) {
-		((RelationshipBuilder) context.getValueStack().peek()).setTargetAlias(match());
+		((RelationshipBuilder) context.getValueStack().peek()).setTargetAlias(context.getMatch());
 	}
 	
 	public Rule Relationship() {
