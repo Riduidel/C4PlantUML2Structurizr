@@ -92,7 +92,9 @@ public class WorkspaceWriter extends FullVisitorAdapter implements GroupAwareVis
 		String includes = workspace.getProperties().getOrDefault(configuration.include, "");
 		StringBuilder includesText = new StringBuilder();
 		for(String path : includes.split(configuration.includeSeparator)) {
-			includesText.append("\t").append("!include ").append(path).append('\n');
+			if(path!=null && !path.isBlank()) {
+				includesText.append("\t").append("!include ").append(path).append('\n');
+			}
 		}
 		prefix.add(includesText);
 		prefix.add(writeProperties(workspace));
