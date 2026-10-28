@@ -6,6 +6,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithAlia
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLink;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithShape;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithSprite;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTags;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
@@ -17,7 +18,8 @@ public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilde
 		WithDescription<BuilderType>,
 		WithSprite<BuilderType>,
 		WithTags<BuilderType>,
-		WithLink<BuilderType> {
+		WithLink<BuilderType>,
+		WithShape<BuilderType> {
 
 	/**
 	 * Name of the variable used to reference this element in model
@@ -28,6 +30,7 @@ public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilde
 	private String sprite = "";
 	private String tags = "";
 	private String link = "";
+	private String shape = "";
 
 	public void setAlias(String match) {
 		this.alias = match;
@@ -98,6 +101,16 @@ public abstract class ModelElementBuilder<BuilderType extends ModelElementBuilde
 	@Override
 	public BuilderType withLink(String link) {
 		this.link = link;
+		return (BuilderType) this;
+	}
+
+	public String getShape() {
+		return shape;
+	}
+
+	@Override
+	public BuilderType withShape(String shape) {
+		this.shape = shape;
 		return (BuilderType) this;
 	}
 }

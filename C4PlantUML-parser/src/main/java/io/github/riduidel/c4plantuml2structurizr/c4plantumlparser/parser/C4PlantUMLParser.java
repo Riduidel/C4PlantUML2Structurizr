@@ -104,6 +104,13 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 							TechnologyDeclaration()
 						)
 					),
+				ZeroOrMore(FirstOf(
+						NamedArgument("$techn", C4PlantUMLParser::setTechnology),
+						NamedArgument("$desc", this::setDescription),
+						NamedArgument("$sprite", this::setSprite),
+						NamedArgument("$tags", this::setTags),
+						NamedArgument("$link", this::setLink)
+						)),
 				Ch(')'),
 				Whitespace(),
 				// Add relationship to its parent node
@@ -129,6 +136,13 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 											ZeroOrMore(
 													TypeDeclaration()))))
 					),
+				ZeroOrMore(FirstOf(
+						NamedArgument("$desc", this::setDescription),
+						NamedArgument("$sprite", this::setSprite),
+						NamedArgument("$tags", this::setTags),
+						NamedArgument("$link", this::setLink),
+						NamedArgument("$type", this::setType)
+						)),
 				Ch(')'),
 				Whitespace(),
 				// Add person to its parent node
@@ -137,13 +151,24 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				.label("PersonBuilder...(....)");
 	}
 	
+	public Rule NamedArgument(String name, Consumer<Context> setter) {
+		return Sequence(Ch(','),
+				Whitespace(),
+				String(name),
+				Whitespace(),
+				Ch('='),
+				Whitespace(),
+				StringLiteral(),
+				runAction(setter));
+	}
+
 	public Rule SystemOrBoundary() {
 		return FirstOf(
 				Sequence(
 					Test("System", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
 					ModelElementBuilder(
 						Sequence("System", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
-						ZeroOrMore(
+						Sequence(ZeroOrMore(
 								DescriptionDeclaration(),
 								ZeroOrMore(SpriteDeclaration(),
 										ZeroOrMore(
@@ -153,6 +178,15 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 														ZeroOrMore(
 																TypeDeclaration(),
 																ZeroOrMore(ShapeDeclaration())))))
+								),
+								ZeroOrMore(FirstOf(
+										NamedArgument("$desc", this::setDescription),
+										NamedArgument("$sprite", this::setSprite),
+										NamedArgument("$tags", this::setTags),
+										NamedArgument("$link", this::setLink),
+										NamedArgument("$type", this::setType),
+										NamedArgument("$baseShape", this::setShape)
+										))
 								),
 						context -> context.getValueStack().push(new SystemBuilder()), 
 						ContainerOrBoundary())),
@@ -171,16 +205,26 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 					Test("Container", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
 					ModelElementBuilder(
 						Sequence("Container", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
-						ZeroOrMore(
-								TechnologyDeclaration(),
-								ZeroOrMore(
-									DescriptionDeclaration(),
-									ZeroOrMore(SpriteDeclaration(),
-											ZeroOrMore(
-													TagsDeclaration(),
-													ZeroOrMore(
-															LinkDeclaration(),
-															ZeroOrMore(ShapeDeclaration())))))
+						Sequence(
+							ZeroOrMore(
+									TechnologyDeclaration(),
+									ZeroOrMore(
+										DescriptionDeclaration(),
+										ZeroOrMore(SpriteDeclaration(),
+												ZeroOrMore(
+														TagsDeclaration(),
+														ZeroOrMore(
+																LinkDeclaration(),
+																ZeroOrMore(ShapeDeclaration())))))
+							),
+							ZeroOrMore(FirstOf(
+									NamedArgument("$techn", C4PlantUMLParser::setTechnology),
+									NamedArgument("$desc", this::setDescription),
+									NamedArgument("$sprite", this::setSprite),
+									NamedArgument("$tags", this::setTags),
+									NamedArgument("$link", this::setLink),
+									NamedArgument("$baseShape", this::setShape)
+									))
 								),
 						context -> context.getValueStack().push(new ContainerBuilder()), 
 						Component())),
@@ -206,16 +250,26 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 		};
 		return ModelElementBuilder(
 				Sequence("Component", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
-				ZeroOrMore(
-						TechnologyDeclaration(),
-						ZeroOrMore(
-							DescriptionDeclaration(),
-							ZeroOrMore(SpriteDeclaration(),
-									ZeroOrMore(
-											TagsDeclaration(),
-											ZeroOrMore(
-													LinkDeclaration(),
-													ZeroOrMore(ShapeDeclaration())))))
+				Sequence(
+					ZeroOrMore(
+							TechnologyDeclaration(),
+							ZeroOrMore(
+								DescriptionDeclaration(),
+								ZeroOrMore(SpriteDeclaration(),
+										ZeroOrMore(
+												TagsDeclaration(),
+												ZeroOrMore(
+														LinkDeclaration(),
+														ZeroOrMore(ShapeDeclaration())))))
+							),
+							ZeroOrMore(FirstOf(
+									NamedArgument("$techn", C4PlantUMLParser::setTechnology),
+									NamedArgument("$desc", this::setDescription),
+									NamedArgument("$sprite", this::setSprite),
+									NamedArgument("$tags", this::setTags),
+									NamedArgument("$link", this::setLink),
+									NamedArgument("$baseShape", this::setShape)
+									))
 						),
 				context -> context.getValueStack().push(new ComponentBuilder()), 
 				descendants

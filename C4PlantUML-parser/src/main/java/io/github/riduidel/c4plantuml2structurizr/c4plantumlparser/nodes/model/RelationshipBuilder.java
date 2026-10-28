@@ -14,6 +14,9 @@ import com.structurizr.model.Relationship;
 
 import io.github.riduidel.c4plantuml2structurizr.ConverterConfiguration;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLink;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithSprite;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTags;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTechnology;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WorkspaceElementVisitor;
@@ -21,11 +24,19 @@ import io.github.riduidel.c4plantuml2structurizr.copier.StructurizrHack;
 
 public class RelationshipBuilder 
 	extends WorkspaceElementBuilder
-	implements WithDescription<RelationshipBuilder>, WithTechnology<RelationshipBuilder> {
+	implements 
+		WithDescription<RelationshipBuilder>, 
+		WithTechnology<RelationshipBuilder>,
+		WithSprite<RelationshipBuilder>,
+		WithTags<RelationshipBuilder>,
+		WithLink<RelationshipBuilder> {
 	private String sourceAlias;
 	private String targetAlias;
 	private String description = "";
 	private String technology = "";
+	private String sprite = "";
+	private String tags = "";
+	private String link = "";
 
 	@Override
 	public String toString() {
@@ -76,5 +87,29 @@ public class RelationshipBuilder
 	}
 	public String getTechnology() {
 		return technology;
+	}
+	@Override
+	public RelationshipBuilder withSprite(String sprite) {
+		this.sprite = sprite;
+		return this;
+	}
+	public String getSprite() {
+		return sprite;
+	}
+	public String getTags() {
+		return tags;
+	}
+	@Override
+	public RelationshipBuilder withTags(String tags) {
+		this.tags = tags;
+		return this;
+	}
+	public String getLink() {
+		return link;
+	}
+	@Override
+	public RelationshipBuilder withLink(String link) {
+		this.link = link;
+		return this;
 	}
 }

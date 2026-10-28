@@ -10,8 +10,6 @@ public class SystemBuilder extends ModelElementBuilder<SystemBuilder, SoftwareSy
 	implements WithType<SystemBuilder>, WithShape<SystemBuilder> {
 
 	private String type = "";
-	private String shape = "";
-
 	public String getType() {
 		return type;
 	}
@@ -20,16 +18,6 @@ public class SystemBuilder extends ModelElementBuilder<SystemBuilder, SoftwareSy
 	public SystemBuilder withType(String type) {
 		this.type = type;
 		return (SystemBuilder) this;
-	}
-
-	public String getShape() {
-		return shape;
-	}
-
-	@Override
-	public SystemBuilder withShape(String shape) {
-		this.shape = shape;
-		return this;
 	}
 
 	@Override
