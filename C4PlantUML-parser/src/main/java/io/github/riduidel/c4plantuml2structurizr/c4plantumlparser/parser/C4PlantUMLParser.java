@@ -1,14 +1,8 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Logger;
-import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -20,12 +14,8 @@ import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.MemoMismatches;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.SuppressSubnodes;
-import org.parboiled.support.ParsingResult;
-import org.parboiled.support.ValueStack;
+import org.parboiled.support.Var;
 
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.WorkspaceBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.C4PlantUMLDiagram;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.Include;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithAlias;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
@@ -45,7 +35,6 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.Co
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
-import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.IncludedDiagram;
 
 /**
  * Parses a plantuml diagram.
@@ -72,6 +61,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				TestNot("@enduml"),
 				FirstOf(
 					Include(),
+					Define(),
 					EnterpriseBoundary(),
 					SystemOrBoundary(),
 					Person(),
@@ -485,6 +475,34 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				.label("!include ...");
 	}
 
+	// Will be changed to separate handling of local vs remote includes
+	public Rule Define() {
+		Var<String> definedVariable = new Var<String>();
+		Var<String> definedValue = new Var<String>();
+		return Sequence(
+				Whitespace(),
+				String("!define "),
+				Whitespace(),
+				Identifier(),
+				definedVariable.set(match()),
+				Whitespace(),
+				Optional(Ch('"')),
+				ZeroOrMore(NoneOf("\n")),
+				definedValue.set(match()),
+				Optional(Ch('"')),
+				new Action() {
+					@Override
+					public boolean run(Context context) {
+						WorkspaceElementBuilder node = (WorkspaceElementBuilder) context.getValueStack().peek();
+						node.setProperty(definedVariable.get(), definedValue.get());
+						return true;
+					}
+				},
+				String("\n")
+				)
+				.label("!include ...");
+	}
+
 	public void processInclude(Context context) {
 		new C4PlantUMLIncludeHandler().processInclude(context);
 	}
@@ -577,16 +595,6 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 			public boolean run(Context context) {
 				consumer.accept(context);
 				return true;
-			}
-		};
-	}
-	
-	Action runAction(Function<Context, Boolean> consumer) {
-		return new Action() {
-
-			@Override
-			public boolean run(Context context) {
-				return consumer.apply(context);
 			}
 		};
 	}
