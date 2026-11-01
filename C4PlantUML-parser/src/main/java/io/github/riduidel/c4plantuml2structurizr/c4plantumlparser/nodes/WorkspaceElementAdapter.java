@@ -8,6 +8,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.Co
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.style.ElementStyleBuilder;
 
 public abstract class WorkspaceElementAdapter<Returned> implements WorkspaceElementVisitor<Returned> {
 	
@@ -124,6 +125,16 @@ public abstract class WorkspaceElementAdapter<Returned> implements WorkspaceElem
 
 	@Override
 	public Returned endVisitBasicBoundary(BasicBoundaryBuilder basicBoundaryBuilder) {
+		return returned;
+	}
+	
+	@Override
+	public boolean startVisitElementStyle(ElementStyleBuilder elementStyleBuilder) {
+		return true;
+	}
+	
+	@Override
+	public Returned endVisitElementStyle(ElementStyleBuilder elementStyleBuilder) {
 		return returned;
 	}
 }

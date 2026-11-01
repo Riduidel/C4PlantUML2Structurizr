@@ -183,6 +183,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	Rule BackgroundColorDeclaration() {
 		return Sequence(
+				Ch(','),
 				Whitespace(),
 				StringLiteral(),
 				runAction(this::setBackgroundColor),
@@ -197,6 +198,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	Rule BorderColorDeclaration() {
 		return Sequence(
+				Ch(','),
 				Whitespace(),
 				StringLiteral(),
 				runAction(this::setBorderColor),
@@ -211,6 +213,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	Rule FontColorDeclaration() {
 		return Sequence(
+				Ch(','),
 				Whitespace(),
 				StringLiteral(),
 				runAction(this::setFontColor),
@@ -225,6 +228,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	Rule ShadowingDeclaration() {
 		return Sequence(
+				Ch(','),
 				Whitespace(),
 				StringLiteral(),
 				runAction(this::setShadowing),
@@ -239,6 +243,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	Rule LegendTextDeclaration() {
 		return Sequence(
+				Ch(','),
 				Whitespace(),
 				StringLiteral(),
 				runAction(this::setLegendText),
@@ -253,6 +258,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	Rule LegendSpriteDeclaration() {
 		return Sequence(
+				Ch(','),
 				Whitespace(),
 				StringLiteral(),
 				runAction(this::setLegendSprite),
@@ -267,6 +273,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	Rule BorderStyleDeclaration() {
 		return Sequence(
+				Ch(','),
 				Whitespace(),
 				StringLiteral(),
 				runAction(this::setBorderStyle),
@@ -281,6 +288,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 
 	Rule BorderThicknessDeclaration() {
 		return Sequence(
+				Ch(','),
 				Whitespace(),
 				StringLiteral(),
 				runAction(this::setBorderThickness),
@@ -293,46 +301,45 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				String("AddElementTag"),
 				Sequence(
 						TargetTagDeclaration(),
-//						ZeroOrMore(BackgroundColorDeclaration(),
-//								ZeroOrMore(
-//										FontColorDeclaration(),
-//										ZeroOrMore(
-//												BorderColorDeclaration(),
-//												ZeroOrMore(
-//														ShadowingDeclaration(),
-//														ZeroOrMore(ShapeDeclaration(),
-//																ZeroOrMore(
-//																		SpriteDeclaration(),
-//																		ZeroOrMore(TechnologyDeclaration(),
-//																				ZeroOrMore(LegendTextDeclaration(),
-//																						ZeroOrMore(LegendSpriteDeclaration(),
-//																								ZeroOrMore(
-//																										BorderStyleDeclaration(),
-//																										ZeroOrMore(BorderThicknessDeclaration())
-//																										)
-//																								)
-//																						)
-//																				)
-//																		)
-//																)
-//														)
-//												)
-//										)
-//								).label("Positionnal arguments"),
+						ZeroOrMore(
+								BackgroundColorDeclaration(),
+								ZeroOrMore(
+										FontColorDeclaration(),
+										ZeroOrMore(
+												BorderColorDeclaration(),
+												ZeroOrMore(ShadowingDeclaration(),
+														ZeroOrMore(ShapeDeclaration()),
+															ZeroOrMore(SpriteDeclaration(),
+																	ZeroOrMore(TechnologyDeclaration(),
+																			ZeroOrMore(LegendTextDeclaration(),
+																					ZeroOrMore(LegendSpriteDeclaration(),
+																							ZeroOrMore(
+																									BorderStyleDeclaration(),
+																									ZeroOrMore(BorderThicknessDeclaration()
+																											)
+																									)
+																							)
+																					)
+																			)
+																	)
+														)
+												)
+										)
+								),
 						ZeroOrMore(FirstOf(
-							NamedArgument("$bgColor", this::setBackgroundColor),
-	//							NamedArgument("$fontColor", this::setFontColor),
-	//							NamedArgument("$borderColor", this::setBorderColor),
-	//							NamedArgument("$shadowing", this::setShadowing),
-	//							NamedArgument("$shape", this::setShape),
-	//							NamedArgument("$sprite", this::setSprite),
-	//							NamedArgument("$techn", C4PlantUMLParser::setTechnology),
-	//							NamedArgument("$legendText", this::setLegendText),
-	//							NamedArgument("$legendSprite", this::setLegendSprite),
-	//							NamedArgument("$borderStyle", this::setBorderStyle),
-							NamedArgument("$borderThickness", this::setBorderThickness)
-								).label("First positionnal argument")
-							).label("Named arguments")
+								NamedArgument("$bgColor", this::setBackgroundColor),
+								NamedArgument("$fontColor", this::setFontColor),
+								NamedArgument("$borderColor", this::setBorderColor),
+								NamedArgument("$shadowing", this::setShadowing),
+								NamedArgument("$shape", this::setShape),
+								NamedArgument("$sprite", this::setSprite),
+								NamedArgument("$techn", C4PlantUMLParser::setTechnology),
+								NamedArgument("$legendText", this::setLegendText),
+								NamedArgument("$legendSprite", this::setLegendSprite),
+								NamedArgument("$borderStyle", this::setBorderStyle),
+								NamedArgument("$borderThickness", this::setBorderThickness)
+								)
+							)
 						),
 				context -> context.getValueStack().push(new ElementStyleBuilder()) 
 				);
