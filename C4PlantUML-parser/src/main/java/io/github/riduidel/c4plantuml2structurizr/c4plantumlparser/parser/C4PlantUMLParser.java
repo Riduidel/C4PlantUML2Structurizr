@@ -1,7 +1,6 @@
 package io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.parser;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +17,17 @@ import org.parboiled.support.Var;
 
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.PlantUMLBlock;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithAlias;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithBackgroundColor;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithBorderColor;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithBorderStyle;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithBorderThickness;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithDescription;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithFontColor;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLabel;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLegendSprite;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLegendText;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithLink;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithShadowing;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithShape;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithSprite;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.WithTags;
@@ -35,6 +42,8 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.Co
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.style.ElementStyleBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.style.WithTargetTag;
 
 /**
  * Parses a plantuml diagram.
@@ -62,6 +71,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				FirstOf(
 					Include(),
 					Define(),
+					AddElementTag(),
 					EnterpriseBoundary(),
 					SystemOrBoundary(),
 					Person(),
@@ -149,14 +159,190 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 				Ch('='),
 				Whitespace(),
 				StringLiteral(),
-				runAction(setter));
+				runAction(setter)).label("Named argument "+name);
+	}
+	
+	void setTargetTag(Context context) {
+		String targetTag = getCleanedStringLiteralMatch(context);
+		((WithTargetTag) context.getValueStack().peek()).withTargetTag(targetTag);
+	}
+
+	Rule TargetTagDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setTargetTag),
+				Whitespace()
+				).label("Target tag declaration");
+	}
+	
+	void setBackgroundColor(Context context) {
+		String backgroundColor = getCleanedStringLiteralMatch(context);
+		((WithBackgroundColor) context.getValueStack().peek()).withBackgroundColor(backgroundColor);
+	}
+
+	Rule BackgroundColorDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setBackgroundColor),
+				Whitespace()
+				).label("Background color declaration");
+	}
+	
+	void setFontColor(Context context) {
+		String fontColor = getCleanedStringLiteralMatch(context);
+		((WithFontColor) context.getValueStack().peek()).withFontColor(fontColor);
+	}
+
+	Rule BorderColorDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setBorderColor),
+				Whitespace()
+				).label("Border color declaration");
+	}
+	
+	void setBorderColor(Context context) {
+		String borderColor = getCleanedStringLiteralMatch(context);
+		((WithBorderColor) context.getValueStack().peek()).withBorderColor(borderColor);
+	}
+
+	Rule FontColorDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setFontColor),
+				Whitespace()
+				).label("Font color declaration");
+	}
+	
+	void setShadowing(Context context) {
+		String shadowing = getCleanedStringLiteralMatch(context);
+		((WithShadowing) context.getValueStack().peek()).withShadowing(shadowing);
+	}
+
+	Rule ShadowingDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setShadowing),
+				Whitespace()
+				).label("Shadowing declaration");
+	}
+	
+	void setLegendText(Context context) {
+		String legendText = getCleanedStringLiteralMatch(context);
+		((WithLegendText) context.getValueStack().peek()).withLegendText(legendText);
+	}
+
+	Rule LegendTextDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setLegendText),
+				Whitespace()
+				).label("Legend text declaration");
+	}
+	
+	void setLegendSprite(Context context) {
+		String legendSprite = getCleanedStringLiteralMatch(context);
+		((WithLegendSprite) context.getValueStack().peek()).withLegendSprite(legendSprite);
+	}
+
+	Rule LegendSpriteDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setLegendSprite),
+				Whitespace()
+				).label("Legend sprite declaration");
+	}
+	
+	void setBorderStyle(Context context) {
+		String borderStyle = getCleanedStringLiteralMatch(context);
+		((WithBorderStyle) context.getValueStack().peek()).withBorderStyle(borderStyle);
+	}
+
+	Rule BorderStyleDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setBorderStyle),
+				Whitespace()
+				).label("Border style declaration");
+	}
+	
+	void setBorderThickness(Context context) {
+		String borderThickness = getCleanedStringLiteralMatch(context);
+		((WithBorderThickness) context.getValueStack().peek()).withBorderThickness(borderThickness);
+	}
+
+	Rule BorderThicknessDeclaration() {
+		return Sequence(
+				Whitespace(),
+				StringLiteral(),
+				runAction(this::setBorderThickness),
+				Whitespace()
+				).label("Border thickness declaration");
+	}
+	
+	public Rule AddElementTag() {
+		return StyleBuilder(
+				String("AddElementTag"),
+				Sequence(
+						TargetTagDeclaration(),
+//						ZeroOrMore(BackgroundColorDeclaration(),
+//								ZeroOrMore(
+//										FontColorDeclaration(),
+//										ZeroOrMore(
+//												BorderColorDeclaration(),
+//												ZeroOrMore(
+//														ShadowingDeclaration(),
+//														ZeroOrMore(ShapeDeclaration(),
+//																ZeroOrMore(
+//																		SpriteDeclaration(),
+//																		ZeroOrMore(TechnologyDeclaration(),
+//																				ZeroOrMore(LegendTextDeclaration(),
+//																						ZeroOrMore(LegendSpriteDeclaration(),
+//																								ZeroOrMore(
+//																										BorderStyleDeclaration(),
+//																										ZeroOrMore(BorderThicknessDeclaration())
+//																										)
+//																								)
+//																						)
+//																				)
+//																		)
+//																)
+//														)
+//												)
+//										)
+//								).label("Positionnal arguments"),
+						ZeroOrMore(FirstOf(
+							NamedArgument("$bgColor", this::setBackgroundColor),
+	//							NamedArgument("$fontColor", this::setFontColor),
+	//							NamedArgument("$borderColor", this::setBorderColor),
+	//							NamedArgument("$shadowing", this::setShadowing),
+	//							NamedArgument("$shape", this::setShape),
+	//							NamedArgument("$sprite", this::setSprite),
+	//							NamedArgument("$techn", C4PlantUMLParser::setTechnology),
+	//							NamedArgument("$legendText", this::setLegendText),
+	//							NamedArgument("$legendSprite", this::setLegendSprite),
+	//							NamedArgument("$borderStyle", this::setBorderStyle),
+							NamedArgument("$borderThickness", this::setBorderThickness)
+								).label("First positionnal argument")
+							).label("Named arguments")
+						),
+				context -> context.getValueStack().push(new ElementStyleBuilder()) 
+				);
 	}
 
 	public Rule SystemOrBoundary() {
 		return FirstOf(
 				Sequence(
 					Test("System", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
-					ModelElementBuilder(
+					RecursiveElementBuilder(
 						Sequence("System", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
 						Sequence(ZeroOrMore(
 								DescriptionDeclaration(),
@@ -193,7 +379,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 		return FirstOf(
 				Sequence(
 					Test("Container", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
-					ModelElementBuilder(
+					RecursiveElementBuilder(
 						Sequence("Container", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
 						Sequence(
 							ZeroOrMore(
@@ -238,7 +424,7 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 	public Rule Component() {
 		Rule[] descendants = new Rule[] {
 		};
-		return ModelElementBuilder(
+		return RecursiveElementBuilder(
 				Sequence("Component", Optional(FirstOf("Db", "Queue")), Optional("_Ext")),
 				Sequence(
 					ZeroOrMore(
@@ -266,7 +452,23 @@ public class C4PlantUMLParser extends BaseParser<WorkspaceElementBuilder> {
 			);
 	}
 	
-	public Rule ModelElementBuilder(Rule modelElement,
+	public Rule StyleBuilder(Rule modelElement,
+			Rule attributes,
+			Consumer<Context> consumer) {
+		return Sequence(
+				Whitespace(),
+				modelElement,
+				Ch('('),
+				runAction(consumer),
+				attributes,
+				Ch(')'),
+				// Add relationship to its parent node
+				peek(1).add(pop()),
+				Whitespace()
+				);
+	}
+	
+	public Rule RecursiveElementBuilder(Rule modelElement,
 			Rule attributes,
 			Consumer<Context> consumer, Rule...descendants) {
 		return Sequence(

@@ -8,6 +8,7 @@ import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.Co
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.PersonBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.RelationshipBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.model.SystemBuilder;
+import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.nodes.style.ElementStyleBuilder;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ComponentDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContainerDiagram;
 import io.github.riduidel.c4plantuml2structurizr.c4plantumlparser.visitors.ContextDiagram;
@@ -57,5 +58,9 @@ public interface WorkspaceElementVisitor<Returned> {
 	boolean startVisitBasicBoundary(BasicBoundaryBuilder basicBoundaryBuilder);
 
 	Returned endVisitBasicBoundary(BasicBoundaryBuilder basicBoundaryBuilder);
+
+	boolean startVisitElementStyle(ElementStyleBuilder elementStyleBuilder);
+
+	Returned endVisitElementStyle(ElementStyleBuilder elementStyleBuilder);
 
 }
