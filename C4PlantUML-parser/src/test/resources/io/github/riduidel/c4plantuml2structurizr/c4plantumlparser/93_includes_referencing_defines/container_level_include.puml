@@ -1,0 +1,5 @@
+@startuml container_level_include
+System_Boundary(systemAlias, "A system") {
+	Container(containerAlias, "A container", "Container technology", "This is a container")
+}
+@enduml

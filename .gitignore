@@ -19,4 +19,6 @@
 # Apply rules also in subdirectories
 !*/
 # Hey I need my test data, no?
+!*.puml
+!*.plantuml
 !*.dsl

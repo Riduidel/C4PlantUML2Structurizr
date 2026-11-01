@@ -1,0 +1,9 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person_Ext(personAlias, "A person", "This is a person")
+SystemDb(systemDBAlias, "A DB system", "This is a system")
+SystemQueue_Ext(systemQueueAlias, "An external queue system")
+
+Rel(personAlias, systemDBAlias, "A relationship between person and system", "This is person to system technology")
+@enduml

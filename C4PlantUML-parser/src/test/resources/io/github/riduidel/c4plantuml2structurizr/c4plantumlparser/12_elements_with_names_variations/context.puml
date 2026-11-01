@@ -1,0 +1,8 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(personAlias, "A person", "This is a person", "Person sprite", "Person tags", "https://microformats.org/wiki/microformats2#person_example", "Person type")
+System(systemAlias, "A system", "This is a system", "System sprite", "System tags", "https://docs.structurizr.com/dsl/language#softwaresystem", "System type", "System baseshape (useless when using SystemDb or SystemQueue)")
+
+Rel(personAlias, systemAlias, "A relationship between person and system", "This is person to system technology")
+@enduml

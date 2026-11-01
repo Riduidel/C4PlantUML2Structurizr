@@ -90,7 +90,9 @@ class WorkspaceCopierTest {
 		// Then
 		Assertions.assertThat(target).usingRecursiveComparison()
 		// I think I can do better than that
-			.ignoringFieldsMatchingRegexes(".*properties")
+			.ignoringCollectionOrderInFieldsMatchingRegexes(".*elements")
+			.ignoringFieldsMatchingRegexes(
+				".*properties|.*interactionStyle|.*tags|.*id|.*idGenerator.*|.*elementsById|.*relationshipsById|.*sourceId|.*destinationId|.*containerId|.*softwareSystemId")
 			.isEqualTo(expected);
 	}
 

@@ -1,0 +1,10 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(personAlias, "A person", "This is a person")
+System_Boundary(systemAlias, "A system") {
+	Container(containerAlias, "A container", $techn="Container technology", $desc="This is a container", $sprite="Container sprite", $tags="Container tags", $link="http://container.link", $baseShape="Container shape")
+}
+
+Rel(personAlias, containerAlias, "A relationship between person and container", "This is person to container technology")
+@enduml

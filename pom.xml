@@ -38,6 +38,21 @@
                 <version>6.2.3</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.20.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>1.15.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.parboiled</groupId>
+                <artifactId>parboiled-java</artifactId>
+                <version>1.4.1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>3.27.3</version>
@@ -76,11 +91,12 @@
                 <configuration>
                     <reportFormat>plain</reportFormat>
                     <consoleOutputReporter>
-                        <disable>true</disable>
+                        <disable>false</disable>
                     </consoleOutputReporter>
                     <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
                         <theme>EMOJI</theme>
                     </statelessTestsetInfoReporter>
+                    <trimStackTrace>false</trimStackTrace>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -141,10 +157,7 @@
                         <version>${jacoco.version}</version>
                         <configuration>
                             <excludes>
-                                <exclude>**/librariesio/model/*</exclude>
-                                <exclude>**/ingester/model/*</exclude>
-                                <exclude>**/github/model/*</exclude>
-                                <exclude>**/stackoverflow/model/*</exclude>
+                                <exclude>sun/**/*</exclude>
                                 <exclude>**/annotations/*</exclude>
                                 <exclude>**/enums/*</exclude>
                                 <exclude>**/exceptions/*</exclude>

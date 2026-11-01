@@ -12,7 +12,7 @@
   </a>
 </p>
 
-> A command-line tool understanding PlantUML syntax and the C4PlantUML macros to generate a structurizr workspace file containing the equivalent diagram.
+> A command-line tool understanding PlantUML syntax and the [C4PlantUML](https://github.com/plantuml-stdlib/C4-PlantUML) macros to generate a structurizr workspace file containing the equivalent diagram.
 
 ### 🏠 [Homepage](https://github.com/Riduidel/C4PlantUML2Structurizr)
 

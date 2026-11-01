@@ -1,0 +1,8 @@
+@startuml component_level_include
+System_Boundary(systemAlias, "A system") {
+	Container_Boundary(containerAlias, "A container") {
+		Component(componentAlias, "A component", "Component technology", "This is a component")
+	}
+}
+
+@enduml
